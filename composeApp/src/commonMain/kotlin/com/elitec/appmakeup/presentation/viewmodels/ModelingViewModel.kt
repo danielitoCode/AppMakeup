@@ -9,6 +9,7 @@ import com.elitec.appmakeup.domain.usecase.AddEntityPropertyUseCase
 import com.elitec.appmakeup.domain.usecase.AddFeatureUseCase
 import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
 import com.elitec.appmakeup.domain.usecase.GenerateProjectStructureUseCase
+import com.elitec.appmakeup.domain.usecase.InitializeProjectUseCase
 import com.elitec.appmakeup.domain.usecase.ValidateProjectUseCase
 import com.elitec.appmakeup.presentation.uiStates.ModelingState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ class ModelingViewModel(
     private val addFeature: AddFeatureUseCase,
     private val addEntityProperty: AddEntityPropertyUseCase,
     private val validateProject: ValidateProjectUseCase,
-    private val generateStructure: GenerateProjectStructureUseCase
+    private val generateStructure: GenerateProjectStructureUseCase,
+    private val initializeProject: InitializeProjectUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(ModelingState())
@@ -53,19 +55,39 @@ class ModelingViewModel(
             feature = feature
         )
 
-        updateProject(updated)
+        _state.update {
+            it.copy(
+                project = updated,
+                selectedFeatureName = feature.name,
+                isDirty = true,
+                validationErrors = emptyList()
+            )
+        }
+    }
+    fun initialize(location: ProjectLocation) {
+        if (_state.value.project != null) return
+
+        val project = initializeProject.execute(location)
+
+        _state.update {
+            it.copy(
+                project = project,
+                location = location,
+                isDirty = false,
+                validationErrors = emptyList()
+            )
+        }
     }
 
-    fun addProperty(
-        featureName: String,
-        property: EntityProperty
-    ) {
+    fun addProperty(property: EntityProperty) {
         val current = requireProjectAndLocation()
+        val selected = _state.value.selectedFeatureName
+            ?: error("No feature selected")
 
         val updated = addEntityProperty.execute(
             location = current.location,
             project = current.project,
-            featureName = featureName,
+            featureName = selected,
             property = property
         )
 
@@ -138,4 +160,10 @@ class ModelingViewModel(
         val project: Project,
         val location: ProjectLocation
     )
+
+    fun selectFeature(featureName: String) {
+        _state.update {
+            it.copy(selectedFeatureName = featureName)
+        }
+    }
 }

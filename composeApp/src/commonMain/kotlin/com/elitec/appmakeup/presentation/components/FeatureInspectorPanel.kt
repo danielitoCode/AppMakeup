@@ -18,7 +18,7 @@ import com.elitec.appmakeup.domain.modeling.entity.PropertyType
 @Composable
 fun FeatureInspectorPanel(
     feature: Feature?,
-    onAddProperty: (EntityProperty) -> Unit
+    onAddProperty: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
@@ -39,22 +39,17 @@ fun FeatureInspectorPanel(
 
         Spacer(Modifier.height(8.dp))
 
+        if (feature.entity.properties.isEmpty()) {
+            Text("No properties yet")
+        }
+
         feature.entity.properties.forEach { prop ->
             Text("- ${prop.name}: ${prop.type}")
         }
 
         Spacer(Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                onAddProperty(
-                    EntityProperty(
-                        name = "property${feature.entity.properties.size}",
-                        type = PropertyType.StringType
-                    )
-                )
-            }
-        ) {
+        Button(onClick = onAddProperty) {
             Text("Add Property")
         }
     }

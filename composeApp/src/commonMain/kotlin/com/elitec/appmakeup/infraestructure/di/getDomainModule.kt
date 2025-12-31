@@ -4,6 +4,8 @@ import com.elitec.appmakeup.domain.usecase.AddEntityPropertyUseCase
 import com.elitec.appmakeup.domain.usecase.AddFeatureUseCase
 import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
 import com.elitec.appmakeup.domain.usecase.GenerateProjectStructureUseCase
+import com.elitec.appmakeup.domain.usecase.InitializeProjectUseCase
+import com.elitec.appmakeup.domain.usecase.LoadProjectUseCase
 import com.elitec.appmakeup.domain.usecase.ValidateProjectUseCase
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -18,4 +20,6 @@ fun getDomainModule(): Module = module {
             rules = getAll()
         )
     }
+    single { LoadProjectUseCase(get()) }
+    single { InitializeProjectUseCase(get()) }
 }

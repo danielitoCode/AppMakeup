@@ -6,8 +6,7 @@ import com.elitec.appmakeup.domain.project.ProjectLocation
 interface ProjectRepository {
 
     fun load(
-        location: ProjectLocation,
-        projectId: String
+        location: ProjectLocation
     ): Project?
 
     fun save(

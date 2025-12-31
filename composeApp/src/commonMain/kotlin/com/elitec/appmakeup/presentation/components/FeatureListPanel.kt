@@ -1,6 +1,8 @@
 package com.elitec.appmakeup.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +23,8 @@ import com.elitec.appmakeup.domain.modeling.Feature
 @Composable
 fun FeatureListPanel(
     features: List<Feature>,
+    selectedFeatureName: String?,
+    onSelectFeature: (String) -> Unit,
     onAddFeature: () -> Unit
 ) {
     Column(
@@ -32,14 +36,25 @@ fun FeatureListPanel(
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(features) { feature ->
-                Text(
-                    text = feature.name,
+                val isSelected = feature.name == selectedFeatureName
+
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(6.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(vertical = 4.dp)
+                        .background(
+                            if (isSelected)
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            else
+                                MaterialTheme.colorScheme.surfaceVariant
+                        )
+                        .clickable {
+                            onSelectFeature(feature.name)
+                        }
                         .padding(8.dp)
-                )
+                ) {
+                    Text(feature.name)
+                }
             }
         }
 

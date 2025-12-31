@@ -14,12 +14,9 @@ class LocalProjectRepository(
 
     private val projectFileName = "project.amk.json"
 
-    override fun load(
-        location: ProjectLocation,
-        projectId: String
-    ): Project? {
-        val rootPath = location.value.toPath()
-        val projectFile = rootPath / projectId / projectFileName
+    override fun load(location: ProjectLocation): Project? {
+        val projectRoot = location.value.toPath()
+        val projectFile = projectRoot / projectFileName
 
         if (!fileSystem.exists(projectFile)) return null
 
@@ -28,37 +25,31 @@ class LocalProjectRepository(
         }
     }
 
-    override fun save(
-        location: ProjectLocation,
-        project: Project
-    ) {
-        val rootPath = location.value.toPath()
-        val projectDir = rootPath / project.name
+    override fun save(location: ProjectLocation, project: Project) {
+        println("save project in ${location.value}")
 
-        fileSystem.createDirectories(projectDir)
+        val projectRoot = location.value.toPath()
 
-        val projectFile = projectDir / projectFileName
+        // 🔴 ESTA LÍNEA ES CRÍTICA
+        fileSystem.createDirectories(projectRoot)
+
+        val projectFile = projectRoot / projectFileName
+
         fileSystem.write(projectFile) {
             writeUtf8(json.encodeToString(project))
         }
     }
 
-    override fun generateStructure(
-        location: ProjectLocation,
-        project: Project
-    ) {
-        val rootPath = location.value.toPath()
-        val projectDir = rootPath / project.name
+    override fun generateStructure(location: ProjectLocation, project: Project) {
+        val projectRoot = location.value.toPath()
+        fileSystem.createDirectories(projectRoot)
 
-        fileSystem.createDirectories(projectDir)
-
-        val featuresDir = projectDir / "features"
+        val featuresDir = projectRoot / "features"
         fileSystem.createDirectories(featuresDir)
 
         project.features.forEach { feature ->
             val featureDir = featuresDir / feature.name
             fileSystem.createDirectories(featureDir)
-
             fileSystem.createDirectories(featureDir / "domain")
             fileSystem.createDirectories(featureDir / "data")
             fileSystem.createDirectories(featureDir / "presentation")

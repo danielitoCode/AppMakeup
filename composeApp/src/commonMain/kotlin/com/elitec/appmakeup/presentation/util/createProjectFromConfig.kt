@@ -4,10 +4,10 @@ import com.elitec.appmakeup.domain.architecture.ArchitectureConfig
 import com.elitec.appmakeup.domain.architecture.Layer
 import com.elitec.appmakeup.domain.project.Project
 
-fun defaultProject(): Project =
+fun createProjectFromConfig(config: CreateProjectConfig): Project =
     Project(
-        name = "MyFirstApp",
-        packageName = "com.example.myfirstapp",
+        name = config.appName,
+        packageName = config.packageName,
         architecture = ArchitectureConfig(
             layers = listOf(
                 Layer.DOMAIN,

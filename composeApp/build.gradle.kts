@@ -41,11 +41,14 @@ kotlin {
 
             // Icon
             implementation(libs.composeIcons.fontAwesome)
+            implementation(libs.icon.extended)
             // Nav
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
             // FileSystem
             implementation(libs.filesystem.okio)
+            // Cache
+            implementation(libs.multiplatform.cache)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
