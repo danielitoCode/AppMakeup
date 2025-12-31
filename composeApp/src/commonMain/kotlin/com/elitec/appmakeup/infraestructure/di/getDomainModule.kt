@@ -22,6 +22,6 @@ fun getDomainModule(): Module = module {
         )
     }
     single { LoadProjectUseCase(get()) }
-    single { ValidateExistingProjectUseCase(get()) }
+    single { ValidateExistingProjectUseCase(get(), get()) }
     single { InitializeProjectUseCase(get()) }
 }

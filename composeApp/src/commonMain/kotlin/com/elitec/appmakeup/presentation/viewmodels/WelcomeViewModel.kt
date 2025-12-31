@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.elitec.appmakeup.domain.project.ProjectLocation
 import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
 import com.elitec.appmakeup.domain.usecase.ValidateExistingProjectUseCase
+import com.elitec.appmakeup.domain.validation.ProjectValidationResult
 import com.elitec.appmakeup.presentation.cache.RecentProjectsCache
 import com.elitec.appmakeup.presentation.settings.RecentProjectsRepository
 import com.elitec.appmakeup.presentation.uiStates.WelcomeState
@@ -70,28 +71,62 @@ class WelcomeViewModel(
         onSuccess: (ProjectLocation) -> Unit
     ) {
         viewModelScope.launch {
+            when (val result = validateExistingProject.execute(location)) {
 
-            val isValid = validateExistingProject.execute(location)
-
-            if (!isValid) {
-                val updated = recentProjectsRepo.remove(location)
-
-                _state.update {
-                    it.copy(
-                        recentProjects = updated,
-                        error = "The selected directory is not a valid AppMakeup project."
-                    )
+                ProjectValidationResult.Valid -> {
+                    val updated = recentProjectsRepo.recordOpened(location)
+                    _state.update { it.copy(recentProjects = updated) }
+                    onSuccess(location)
                 }
-                return@launch
+
+                is ProjectValidationResult.Invalid.MigratableVersion -> {
+                    _state.update {
+                        it.copy(
+                            error = """
+                    This project was created with an older version.
+                    Project version: ${result.projectVersion}
+                    Supported version: ${result.supportedVersion}
+                    
+                    Migration will be available in a future version.
+                """.trimIndent()
+                        )
+                    }
+                }
+
+                is ProjectValidationResult.Invalid.UnsupportedVersion -> {
+                    _state.update {
+                        it.copy(
+                            error = """
+                    This project was created with a newer version of AppMakeup.
+                    
+                    Project version: ${result.projectVersion}
+                    Supported version: ${result.supportedVersion}
+                    
+                    Please update AppMakeup.
+                """.trimIndent()
+                        )
+                    }
+                }
+
+                is ProjectValidationResult.Invalid -> {
+                    val message = when (result) {
+                        ProjectValidationResult.Invalid.DirectoryNotFound ->
+                            "The selected directory does not exist."
+                        ProjectValidationResult.Invalid.MissingProjectFile ->
+                            "This folder is not an AppMakeup project."
+                        ProjectValidationResult.Invalid.InvalidProjectFile ->
+                            "The project file is corrupted."
+                    }
+
+                    val updated = recentProjectsRepo.remove(location)
+                    _state.update {
+                        it.copy(
+                            recentProjects = updated,
+                            error = message
+                        )
+                    }
+                }
             }
-
-            val updated = recentProjectsRepo.recordOpened(location)
-
-            _state.update {
-                it.copy(recentProjects = updated)
-            }
-
-            onSuccess(location)
         }
     }
 
