@@ -1,6 +1,6 @@
-package com.elitec.appmakeup.feature.entityProperty.domain.entity
+package com.elitec.appmakeup.domain.modeling.entity
 
-import com.elitec.appmakeup.feature.propertyType.domain.entity.PropertyType
+import com.elitec.appmakeup.domain.modeling.entity.PropertyType
 
 data class EntityProperty(
     val name: String,

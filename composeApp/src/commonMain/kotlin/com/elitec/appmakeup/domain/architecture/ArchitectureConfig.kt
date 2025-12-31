@@ -1,4 +1,4 @@
-package com.elitec.appmakeup.feature.architectureConfig.domain.entity
+package com.elitec.appmakeup.domain.architecture
 
 data class ArchitectureConfig(
     val layers: List<Layer>

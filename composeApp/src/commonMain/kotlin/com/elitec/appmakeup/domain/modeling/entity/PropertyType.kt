@@ -1,4 +1,4 @@
-package com.elitec.appmakeup.feature.propertyType.domain.entity
+package com.elitec.appmakeup.domain.modeling.entity
 
 sealed class PropertyType {
 
