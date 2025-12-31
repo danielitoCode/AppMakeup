@@ -41,7 +41,7 @@ navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-co
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 # FileSystem
 filesystem-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-
+filesystem-okio-test = { module="com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }

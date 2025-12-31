@@ -2,7 +2,9 @@ package com.elitec.appmakeup.domain.project
 
 import com.elitec.appmakeup.domain.architecture.ArchitectureConfig
 import com.elitec.appmakeup.domain.modeling.Feature
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Project(
     val name: String,
     val packageName: String,

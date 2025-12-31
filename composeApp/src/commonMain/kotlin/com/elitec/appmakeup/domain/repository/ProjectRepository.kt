@@ -1,14 +1,27 @@
 package com.elitec.appmakeup.domain.repository
 
 import com.elitec.appmakeup.domain.project.Project
+import com.elitec.appmakeup.domain.project.ProjectLocation
 
 interface ProjectRepository {
 
-    fun load(projectId: String): Project?
+    fun load(
+        location: ProjectLocation,
+        projectId: String
+    ): Project?
 
-    fun save(project: Project)
+    fun save(
+        location: ProjectLocation,
+        project: Project
+    )
 
-    fun generateStructure(project: Project)
+    fun generateStructure(
+        location: ProjectLocation,
+        project: Project
+    )
 
-    fun export(project: Project)
+    fun export(
+        location: ProjectLocation,
+        project: Project
+    )
 }

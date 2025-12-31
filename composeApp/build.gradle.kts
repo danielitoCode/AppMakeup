@@ -38,7 +38,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
-            implementation(libs.koin.test)
+
             // Icon
             implementation(libs.composeIcons.fontAwesome)
             // Nav
@@ -49,6 +49,8 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.koin.test)
+            implementation(libs.filesystem.okio.test)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
