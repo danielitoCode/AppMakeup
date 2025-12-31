@@ -18,6 +18,18 @@ class RecentProjectsRepository(
         return saveInternal(location)
     }
 
+    fun remove(location: ProjectLocation): List<ProjectLocation> {
+        val normalized = location.normalized().value
+
+        val updated = store.load()
+            .recentProjects
+            .filterNot { it == normalized }
+
+        store.save(AppSettings(updated))
+
+        return updated.map { ProjectLocation(it) }
+    }
+
     private fun saveInternal(location: ProjectLocation): List<ProjectLocation> {
         val normalized = location.normalized()
 

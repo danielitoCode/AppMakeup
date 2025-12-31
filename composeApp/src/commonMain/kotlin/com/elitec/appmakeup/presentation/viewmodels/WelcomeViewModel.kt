@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elitec.appmakeup.domain.project.ProjectLocation
 import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
+import com.elitec.appmakeup.domain.usecase.ValidateExistingProjectUseCase
 import com.elitec.appmakeup.presentation.cache.RecentProjectsCache
 import com.elitec.appmakeup.presentation.settings.RecentProjectsRepository
 import com.elitec.appmakeup.presentation.uiStates.WelcomeState
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
     private val createProject: CreateProjectUseCase,
-    private val recentProjectsRepo: RecentProjectsRepository
+    private val recentProjectsRepo: RecentProjectsRepository,
+    private val validateExistingProject: ValidateExistingProjectUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WelcomeState())
@@ -67,13 +69,30 @@ class WelcomeViewModel(
         location: ProjectLocation,
         onSuccess: (ProjectLocation) -> Unit
     ) {
-        val updated = recentProjectsRepo.recordOpened(location)
+        viewModelScope.launch {
 
-        _state.update {
-            it.copy(recentProjects = updated)
+            val isValid = validateExistingProject.execute(location)
+
+            if (!isValid) {
+                val updated = recentProjectsRepo.remove(location)
+
+                _state.update {
+                    it.copy(
+                        recentProjects = updated,
+                        error = "The selected directory is not a valid AppMakeup project."
+                    )
+                }
+                return@launch
+            }
+
+            val updated = recentProjectsRepo.recordOpened(location)
+
+            _state.update {
+                it.copy(recentProjects = updated)
+            }
+
+            onSuccess(location)
         }
-
-        onSuccess(location)
     }
 
     fun clearError() {

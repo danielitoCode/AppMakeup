@@ -8,5 +8,5 @@ import org.koin.dsl.module
 
 fun getViewModelModule(): Module = module {
     viewModel { ModelingViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { WelcomeViewModel(get(), get()) }
+    viewModel { WelcomeViewModel(get(), get(), get()) }
 }
