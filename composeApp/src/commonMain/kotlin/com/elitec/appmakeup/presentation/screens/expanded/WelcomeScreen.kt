@@ -39,7 +39,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elitec.appmakeup.domain.project.Project
 import com.elitec.appmakeup.domain.project.ProjectLocation
 import com.elitec.appmakeup.presentation.components.CreateProjectDialog
+import com.elitec.appmakeup.presentation.components.CreatingProjectOverlay
 import com.elitec.appmakeup.presentation.components.RecentProjectItem
+import com.elitec.appmakeup.presentation.components.RecentProjectsSection
 import com.elitec.appmakeup.presentation.util.createProjectFromConfig
 import com.elitec.appmakeup.presentation.util.pickDirectory
 import com.elitec.appmakeup.presentation.viewmodels.WelcomeViewModel
@@ -49,10 +51,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun WelcomeScreen(
     viewModel: WelcomeViewModel = koinViewModel(),
     isDarkTheme: Boolean,
-    recentProjects: List<ProjectLocation>,
     onToggleTheme: () -> Unit,
     onNavigateToModeling: (ProjectLocation) -> Unit,
-    onCreateProject: (Project, ProjectLocation) -> Unit,
     onOpenProject: (ProjectLocation) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -153,22 +153,18 @@ fun WelcomeScreen(
             // -------------------------
             // Recent projects
             // -------------------------
-            if (recentProjects.isNotEmpty()) {
+            if (state.recentProjects.isNotEmpty()) {
                 Spacer(Modifier.height(32.dp))
 
-                Text(
-                    text = "Recent Projects",
-                    style = MaterialTheme.typography.titleMedium
+                RecentProjectsSection(
+                    projects = state.recentProjects,
+                    onOpenProject = { location ->
+                        viewModel.openExistingProject(
+                            location = location,
+                            onSuccess = onNavigateToModeling
+                        )
+                    }
                 )
-
-                Spacer(Modifier.height(12.dp))
-
-                recentProjects.forEach { location ->
-                    RecentProjectItem(
-                        location = location,
-                        onClick = { onOpenProject(location) }
-                    )
-                }
             }
         }
 
@@ -188,6 +184,10 @@ fun WelcomeScreen(
                     )
                 }
             )
+        }
+
+        if (state.isCreatingProject) {
+            CreatingProjectOverlay()
         }
 
         state.error?.let { error ->

@@ -44,25 +44,10 @@ fun AppRoot(
             composable<AppDestination.Welcome> {
                 WelcomeScreen(
                     isDarkTheme = appUiState.isDarkTheme,
-                    recentProjects = appUiState.recentProjects,
-
                     onToggleTheme = {
                         appUiState = appUiState.copy(
                             isDarkTheme = !appUiState.isDarkTheme
                         )
-                    },
-
-                    onCreateProject = { project, location ->
-                        RecentProjectsCache.add(location)
-
-                        appUiState = appUiState.copy(
-                            recentProjects = RecentProjectsCache.get()
-                        )
-
-                        navController.navigate(AppDestination.Modeling(
-                            location.value,
-                            ModelingMode.CREATE.name
-                            ))
                     },
                     onNavigateToModeling = { location ->
                         navController.navigate(

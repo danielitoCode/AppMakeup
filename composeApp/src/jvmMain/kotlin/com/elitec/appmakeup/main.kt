@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.elitec.appmakeup.infraestructure.di.getCacheModules
 import com.elitec.appmakeup.infraestructure.di.getDataModule
 import com.elitec.appmakeup.infraestructure.di.getDomainModule
 import com.elitec.appmakeup.infraestructure.di.getViewModelModule
@@ -19,6 +20,7 @@ fun main() = application {
         startKoin {
             modules(
                 getDataModule(),
+                getCacheModules(),
                 getDomainModule(),
                 getViewModelModule()
             )
