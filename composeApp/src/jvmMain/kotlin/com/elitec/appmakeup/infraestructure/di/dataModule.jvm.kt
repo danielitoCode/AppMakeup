@@ -15,6 +15,7 @@ actual fun getDataModule(): Module = module {
         Json {
             prettyPrint = true
             encodeDefaults = true
+            classDiscriminator = "type"
         }
     }
 

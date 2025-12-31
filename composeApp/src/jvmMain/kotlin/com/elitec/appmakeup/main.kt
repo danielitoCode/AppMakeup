@@ -3,6 +3,9 @@ package com.elitec.appmakeup
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.elitec.appmakeup.infraestructure.di.getDataModule
+import com.elitec.appmakeup.infraestructure.di.getDomainModule
+import com.elitec.appmakeup.infraestructure.di.getViewModelModule
+import com.elitec.appmakeup.presentation.screens.expanded.ModelingScreen
 import org.koin.core.context.startKoin
 
 fun main() = application {
@@ -11,8 +14,13 @@ fun main() = application {
         title = "AppMakeup",
     ) {
         startKoin {
-            getDataModule()
+            modules(
+                getDataModule(),
+                getDomainModule(),
+                getViewModelModule()
+            )
         }
-        App()
+        //App()
+        ModelingScreen()
     }
 }

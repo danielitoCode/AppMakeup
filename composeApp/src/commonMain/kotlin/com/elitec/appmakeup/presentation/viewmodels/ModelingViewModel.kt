@@ -1,5 +1,6 @@
 package com.elitec.appmakeup.presentation.viewmodels
 
+import androidx.lifecycle.ViewModel
 import com.elitec.appmakeup.domain.modeling.Feature
 import com.elitec.appmakeup.domain.modeling.entity.EntityProperty
 import com.elitec.appmakeup.domain.project.Project
@@ -20,7 +21,7 @@ class ModelingViewModel(
     private val addEntityProperty: AddEntityPropertyUseCase,
     private val validateProject: ValidateProjectUseCase,
     private val generateStructure: GenerateProjectStructureUseCase
-) {
+): ViewModel() {
 
     private val _state = MutableStateFlow(ModelingState())
     val state: StateFlow<ModelingState> = _state
