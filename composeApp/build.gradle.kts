@@ -38,9 +38,8 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
-
             // Icon
-            implementation(libs.composeIcons.fontAwesome)
+            // implementation(libs.composeIcons.fontAwesome)
             implementation(libs.icon.extended)
             // Nav
             implementation(libs.navigation.compose)
@@ -63,8 +62,33 @@ kotlin {
     }
 }
 
-
 compose.desktop {
+    application {
+        mainClass = "com.elitec.appmakeup.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Msi)
+
+            packageName = "AppMakeup"
+            packageVersion = "1.0.0"
+
+            modules(
+                "java.base",
+                "java.desktop",
+                "java.logging",
+                "java.sql",
+                "jdk.unsupported"
+            )
+
+            windows {
+                shortcut = true
+                perUserInstall = true
+            }
+        }
+    }
+}
+
+/*compose.desktop {
     application {
         mainClass = "com.elitec.appmakeup.MainKt"
 
@@ -74,4 +98,4 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
-}
+}*/
