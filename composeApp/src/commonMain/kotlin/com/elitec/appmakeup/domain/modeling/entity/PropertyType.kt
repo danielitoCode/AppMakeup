@@ -4,6 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class PropertyType {
+    // -------------------------
+    // Primitive types
+    // -------------------------
+
     @Serializable
     @SerialName("string")
     data object StringType : PropertyType()
@@ -21,12 +25,43 @@ sealed class PropertyType {
     data object BooleanType : PropertyType()
 
     @Serializable
+    @SerialName("float")
+    data object FloatType : PropertyType()
+
+    @Serializable
+    @SerialName("double")
+    data object DoubleType : PropertyType()
+
+    // -------------------------
+    // Special types
+    // -------------------------
+
+    @Serializable
+    @SerialName("uuid")
+    data object UUIDType : PropertyType()
+
+    @Serializable
     @SerialName("datetime")
     data object DateTimeType : PropertyType()
 
+    // -------------------------
+    // Enum type
+    // -------------------------
+
     @Serializable
-    @SerialName("custom")
-    data class CustomType(
+    @SerialName("enum")
+    data class EnumType(
+        val name: String,
+        val values: List<String>
+    ) : PropertyType()
+
+    // -------------------------
+    // Value Object
+    // -------------------------
+
+    @Serializable
+    @SerialName("value_object")
+    data class ValueObjectType(
         val name: String
     ) : PropertyType()
 }

@@ -7,6 +7,7 @@ import androidx.compose.ui.window.application
 import com.elitec.appmakeup.infraestructure.di.getCacheModules
 import com.elitec.appmakeup.infraestructure.di.getDataModule
 import com.elitec.appmakeup.infraestructure.di.getDomainModule
+import com.elitec.appmakeup.infraestructure.di.getMigrationModule
 import com.elitec.appmakeup.infraestructure.di.getViewModelModule
 import com.elitec.appmakeup.presentation.AppRoot
 import com.elitec.appmakeup.presentation.screens.expanded.ModelingScreen
@@ -21,6 +22,7 @@ fun main() = application {
             modules(
                 getDataModule(),
                 getCacheModules(),
+                getMigrationModule(),
                 getDomainModule(),
                 getViewModelModule()
             )
