@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DomainEntity(
     val name: String,
-    val properties: List<EntityProperty>
+    val properties: List<EntityProperty>,
+    val relationships: List<EntityRelationship> = emptyList()
 )

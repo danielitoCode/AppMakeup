@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,13 +16,11 @@ import com.elitec.appmakeup.domain.modeling.Feature
 import com.elitec.appmakeup.domain.modeling.entity.DomainEntity
 import com.elitec.appmakeup.domain.modeling.entity.EntityProperty
 import com.elitec.appmakeup.domain.modeling.entity.PropertyType
-import com.elitec.appmakeup.domain.project.Project
 import com.elitec.appmakeup.domain.project.ProjectLocation
 import com.elitec.appmakeup.presentation.components.FeatureInspectorPanel
 import com.elitec.appmakeup.presentation.components.FeatureListPanel
 import com.elitec.appmakeup.presentation.components.ModelingTopBar
 import com.elitec.appmakeup.presentation.util.ModelingMode
-import com.elitec.appmakeup.presentation.util.defaultProjectLocation
 import com.elitec.appmakeup.presentation.viewmodels.ModelingViewModel
 import org.koin.compose.viewmodel.koinViewModel
 

@@ -3,6 +3,9 @@ package com.elitec.appmakeup.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.project.usecase.CreateProjectWithTemplateUseCase
+import com.elitec.appmakeup.domain.template.ProjectTemplate
+import com.elitec.appmakeup.domain.template.StructureGenerationResult
 import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
 import com.elitec.appmakeup.domain.usecase.ValidateExistingProjectUseCase
 import com.elitec.appmakeup.domain.validation.ProjectValidationResult
@@ -17,9 +20,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
-    private val createProject: CreateProjectUseCase,
+    private val createProjectWithTemplate: CreateProjectWithTemplateUseCase,
     private val recentProjectsRepo: RecentProjectsRepository,
-    private val validateExistingProject: ValidateExistingProjectUseCase
+    private val validateExistingProject: ValidateExistingProjectUseCase,
+    private val defaultTemplate: ProjectTemplate
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(WelcomeState())
@@ -46,23 +50,41 @@ class WelcomeViewModel(
         onSuccess: (ProjectLocation) -> Unit
     ) {
         viewModelScope.launch {
+
             _state.update { it.copy(isCreatingProject = true) }
 
             val location = config.toProjectLocation()
             val project = createProjectFromConfig(config)
 
-            createProject.execute(location, project)
+            val result = createProjectWithTemplate.execute(
+                project = project,
+                location = location,
+                template = defaultTemplate
+            )
 
-            val updated = recentProjectsRepo.recordCreated(location)
+            when (result) {
+                is StructureGenerationResult.Success -> {
+                    recentProjectsRepo.recordCreated(location)
 
-            _state.update {
-                it.copy(
-                    isCreatingProject = false,
-                    recentProjects = updated
-                )
+                    _state.update {
+                        it.copy(
+                            isCreatingProject = false,
+                            recentProjects = recentProjectsRepo.load()
+                        )
+                    }
+
+                    onSuccess(location)
+                }
+
+                is StructureGenerationResult.Failure -> {
+                    _state.update {
+                        it.copy(
+                            isCreatingProject = false,
+                            error = "Failed to create project structure"
+                        )
+                    }
+                }
             }
-
-            onSuccess(location)
         }
     }
 

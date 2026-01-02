@@ -11,14 +11,25 @@ object EntityRules : ModelingRule<DomainEntity> {
             violations += ModelingViolation("Entity name cannot be empty")
         }
 
-        val duplicated = target.properties
+        val duplicatedProps = target.properties
             .groupBy { it.name }
             .filter { it.value.size > 1 }
             .keys
 
-        duplicated.forEach {
+        duplicatedProps.forEach {
             violations += ModelingViolation(
                 "Duplicated property name: $it"
+            )
+        }
+
+        val duplicatedRelations = target.relationships
+            .groupBy { it.name }
+            .filter { it.value.size > 1 }
+            .keys
+
+        duplicatedRelations.forEach {
+            violations += ModelingViolation(
+                "Duplicated relationship name: $it"
             )
         }
 
