@@ -1,6 +1,11 @@
 package com.elitec.appmakeup.presentation.screens.expanded
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,48 +33,71 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.elitec.appmakeup.domain.project.Project
+import appmakeup.composeapp.generated.resources.Res
+import appmakeup.composeapp.generated.resources.sinfoto
+import appmakeup.composeapp.generated.resources.sinfotoicon
 import com.elitec.appmakeup.domain.project.ProjectLocation
 import com.elitec.appmakeup.presentation.components.CreateProjectDialog
 import com.elitec.appmakeup.presentation.components.CreatingProjectOverlay
-import com.elitec.appmakeup.presentation.components.RecentProjectItem
 import com.elitec.appmakeup.presentation.components.RecentProjectsSection
-import com.elitec.appmakeup.presentation.util.createProjectFromConfig
 import com.elitec.appmakeup.presentation.util.pickDirectory
 import com.elitec.appmakeup.presentation.viewmodels.WelcomeViewModel
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WelcomeScreen(
-    viewModel: WelcomeViewModel = koinViewModel(),
-    isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
     onNavigateToModeling: (ProjectLocation) -> Unit,
-    onOpenProject: (ProjectLocation) -> Unit
+    onOpenProject: (ProjectLocation) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: WelcomeViewModel = koinViewModel(),
+    isWindowsApp: Boolean = true,
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val iconThemeButton by animateColorAsState(MaterialTheme.colorScheme.onBackground)
 
     var showCreateDialog by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
+        contentAlignment = Alignment.TopStart,
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(24.dp)
     ) {
-
         // -------------------------
-        // Top-right actions (Theme)
+        // Top-start actions (Theme)
         // -------------------------
+        if(!isWindowsApp) {
+            IconButton(onClick = onToggleTheme) {
+                AnimatedContent(
+                    targetState = if (isDarkTheme)
+                        Icons.Default.LightMode
+                    else
+                        Icons.Default.DarkMode,
+                ) { icon ->
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Toggle theme",
+                        tint = iconThemeButton
+                    )
+                }
+            }
+        }
+        /* ToggleButton
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
@@ -79,95 +108,121 @@ fun WelcomeScreen(
                         Icons.Default.LightMode
                     else
                         Icons.Default.DarkMode,
-                    contentDescription = "Toggle theme"
+                    contentDescription = "Toggle theme",
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
-        }
-
+        }*/
         // -------------------------
         // Center content
         // -------------------------
-        Column(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(420.dp)
+        Row(
+            modifier = Modifier.fillMaxSize()
         ) {
-
-            Text(
-                text = "App Makeup",
-                style = MaterialTheme.typography.headlineMedium
-            )
-
-            Spacer(Modifier.height(6.dp))
-
-            Text(
-                text = "Create and model applications visually",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-            )
-
-            Spacer(Modifier.height(32.dp))
-
-            // -------------------------
-            // Quick actions card
-            // -------------------------
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                tonalElevation = 2.dp,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier.weight(1f)
+                    .fillMaxSize()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    fontWeight = FontWeight.Bold,
+                    text = "App Makeup",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
+                Image(
+                    painter = painterResource(Res.drawable.sinfotoicon),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(start = 15.dp, end = 15.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                )
+
+
+
+
+                // -------------------------
+                // Quick actions card
+                // -------------------------
+                Column {
                     Text(
-                        text = "Quick Start",
-                        style = MaterialTheme.typography.titleMedium
+                        text = "Create and model applications visually",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
-
                     Spacer(Modifier.height(16.dp))
-
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { showCreateDialog = true }
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        tonalElevation = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Create New Project")
-                    }
+                        Column(modifier = Modifier.padding(16.dp)) {
 
-                    Spacer(Modifier.height(12.dp))
+                            Text(
+                                text = "Quick Start",
+                                style = MaterialTheme.typography.titleMedium
+                            )
 
-                    OutlinedButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            val directory = pickDirectory() ?: return@OutlinedButton
-                            onOpenProject(ProjectLocation(directory))
+                            Spacer(Modifier.height(16.dp))
+
+                            OutlinedButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    val directory = pickDirectory() ?: return@OutlinedButton
+                                    onOpenProject(ProjectLocation(directory))
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.FolderOpen,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = "Open Existing Project",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                            Spacer(Modifier.height(12.dp))
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = { showCreateDialog = true }
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Create New Project")
+                            }
                         }
-                    ) {
-                        Icon(Icons.Default.FolderOpen, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Open Existing Project")
                     }
                 }
             }
-
             // -------------------------
             // Recent projects
             // -------------------------
-            if (state.recentProjects.isNotEmpty()) {
-                Spacer(Modifier.height(32.dp))
-
-                RecentProjectsSection(
-                    projects = state.recentProjects,
-                    onOpenProject = { location ->
-                        viewModel.openExistingProject(
-                            location = location,
-                            onSuccess = onNavigateToModeling
-                        )
-                    }
-                )
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            ) {
+                this@Row.AnimatedVisibility(
+                    visible = state.recentProjects.isNotEmpty()
+                ) {
+                    RecentProjectsSection(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(10.dp),
+                        projects = state.recentProjects,
+                        onOpenProject = { location ->
+                            viewModel.openExistingProject(
+                                location = location,
+                                onSuccess = onNavigateToModeling
+                            )
+                        }
+                    )
+                }
             }
         }
-
         // -------------------------
         // Create Project Dialog
         // -------------------------

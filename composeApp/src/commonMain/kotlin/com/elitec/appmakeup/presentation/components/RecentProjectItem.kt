@@ -41,32 +41,34 @@ fun RecentProjectItem(
             .fillMaxWidth()
             .padding(vertical = 2.dp)
     ) {
-        Row(
+        Column (
             modifier = Modifier
                 .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.Start
         ) {
 
-            Icon(
-                imageVector = Icons.Default.Folder,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Folder,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
 
-            Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(12.dp))
 
-            Column {
                 Text(
                     text = projectName,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Text(
-                    text = location.value,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
+
+            Text(
+                text = location.value,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
         }
     }
 }

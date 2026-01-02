@@ -13,11 +13,17 @@ import com.elitec.appmakeup.domain.project.ProjectLocation
 
 @Composable
 fun RecentProjectsSection(
+    modifier: Modifier = Modifier,
     projects: List<ProjectLocation>,
     onOpenProject: (ProjectLocation) -> Unit
 ) {
-    Column {
-        Text("Recent Projects")
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = "Recent Projects",
+            color = MaterialTheme.colorScheme.onBackground
+        )
 
         if (projects.isEmpty()) {
             Text(
