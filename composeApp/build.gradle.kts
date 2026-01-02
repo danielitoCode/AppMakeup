@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinSerialization)
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 kotlin {
@@ -86,6 +87,12 @@ compose.desktop {
             }
         }
     }
+}
+
+ktlint {
+    version.set("1.1.1")
+    android.set(false)
+    ignoreFailures.set(false)
 }
 
 /*compose.desktop {
