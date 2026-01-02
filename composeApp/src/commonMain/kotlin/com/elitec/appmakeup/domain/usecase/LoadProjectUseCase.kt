@@ -7,9 +7,13 @@ import com.elitec.appmakeup.domain.repository.ProjectRepository
 class LoadProjectUseCase(
     private val repository: ProjectRepository
 ) {
-    fun execute(location: ProjectLocation): Project? {
-        // Ajustá esto a tu contrato real:
-        // si tu repo usa projectId o projectName, adapta aquí.
-        return repository.load(location)
+    fun execute(
+        location: ProjectLocation,
+        projectName: String
+    ): Project? {
+        return repository.load(
+            location = location,
+            projectName = projectName
+        )
     }
 }

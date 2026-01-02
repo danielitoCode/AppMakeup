@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.Path.Companion.toPath
 
 class WelcomeViewModel(
     private val createProjectWithTemplate: CreateProjectWithTemplateUseCase,
@@ -47,24 +48,38 @@ class WelcomeViewModel(
 
     fun createNewProject(
         config: CreateProjectConfig,
-        onSuccess: (ProjectLocation) -> Unit
+        onSuccess: (ProjectLocation, String) -> Unit
     ) {
         viewModelScope.launch {
 
             _state.update { it.copy(isCreatingProject = true) }
 
-            val location = config.toProjectLocation()
+            // 1️⃣ Workspace
+            val workspace = config.toProjectLocation()
+
+            // 2️⃣ Nombre del proyecto
+            val projectName = config.appName.trim()
+
+            // 3️⃣ Proyecto de dominio
             val project = createProjectFromConfig(config)
 
+            // 4️⃣ Crear estructura + guardar
             val result = createProjectWithTemplate.execute(
                 project = project,
-                location = location,
+                location = workspace,
                 template = defaultTemplate
             )
 
             when (result) {
+
                 is StructureGenerationResult.Success -> {
-                    recentProjectsRepo.recordCreated(location)
+
+                    // 5️⃣ Guardar en recientes el PROJECT ROOT
+                    val projectRoot = ProjectLocation(
+                        (workspace.value.toPath() / projectName).toString()
+                    )
+
+                    recentProjectsRepo.recordCreated(projectRoot)
 
                     _state.update {
                         it.copy(
@@ -73,7 +88,8 @@ class WelcomeViewModel(
                         )
                     }
 
-                    onSuccess(location)
+                    // 6️⃣ Navegar con contrato Core V2
+                    onSuccess(workspace, projectName)
                 }
 
                 is StructureGenerationResult.Failure -> {
@@ -90,27 +106,36 @@ class WelcomeViewModel(
 
     fun openExistingProject(
         location: ProjectLocation,
-        onSuccess: (ProjectLocation) -> Unit
+        projectName: String,
+        onSuccess: (ProjectLocation, String) -> Unit
     ) {
         viewModelScope.launch {
-            when (val result = validateExistingProject.execute(location)) {
+
+            when (
+                val result = validateExistingProject.execute(
+                    location = location,
+                    projectName = projectName
+                )
+            ) {
 
                 ProjectValidationResult.Valid -> {
                     val updated = recentProjectsRepo.recordOpened(location)
                     _state.update { it.copy(recentProjects = updated) }
-                    onSuccess(location)
+
+                    onSuccess(location, projectName)
                 }
 
                 is ProjectValidationResult.Invalid.MigratableVersion -> {
                     _state.update {
                         it.copy(
                             error = """
-                    This project was created with an older version.
-                    Project version: ${result.projectVersion}
-                    Supported version: ${result.supportedVersion}
-                    
-                    Migration will be available in a future version.
-                """.trimIndent()
+                        This project was created with an older version.
+                        
+                        Project version: ${result.projectVersion}
+                        Supported version: ${result.supportedVersion}
+                        
+                        Migration will be available in a future version.
+                        """.trimIndent()
                         )
                     }
                 }
@@ -119,13 +144,13 @@ class WelcomeViewModel(
                     _state.update {
                         it.copy(
                             error = """
-                    This project was created with a newer version of AppMakeup.
-                    
-                    Project version: ${result.projectVersion}
-                    Supported version: ${result.supportedVersion}
-                    
-                    Please update AppMakeup.
-                """.trimIndent()
+                        This project was created with a newer version of AppMakeup.
+                        
+                        Project version: ${result.projectVersion}
+                        Supported version: ${result.supportedVersion}
+                        
+                        Please update AppMakeup.
+                        """.trimIndent()
                         )
                     }
                 }
@@ -133,14 +158,18 @@ class WelcomeViewModel(
                 is ProjectValidationResult.Invalid -> {
                     val message = when (result) {
                         ProjectValidationResult.Invalid.DirectoryNotFound ->
-                            "The selected directory does not exist."
+                            "The selected workspace does not exist."
+
                         ProjectValidationResult.Invalid.MissingProjectFile ->
-                            "This folder is not an AppMakeup project."
+                            "This folder does not contain a valid AppMakeup project."
+
                         ProjectValidationResult.Invalid.InvalidProjectFile ->
-                            "The project file is corrupted."
+                            "The project file is corrupted or unreadable."
+
                     }
 
                     val updated = recentProjectsRepo.remove(location)
+
                     _state.update {
                         it.copy(
                             recentProjects = updated,

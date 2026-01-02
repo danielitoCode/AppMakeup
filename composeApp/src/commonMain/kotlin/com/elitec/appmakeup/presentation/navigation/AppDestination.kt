@@ -12,12 +12,16 @@ sealed interface AppDestination {
 
     @Serializable
     data class Modeling(
-        val path: String,
+        val workspacePath: String,
+        val projectName: String,
         val mode: String
     ): AppDestination {
         init {
-            require(path.isNotBlank()) {
-                "Project location cannot be empty"
+            require(workspacePath.isNotBlank()) {
+                "Project workspacePath cannot be empty"
+            }
+            require(projectName.isNotBlank()) {
+                "Project projectName cannot be empty"
             }
             require(mode.isNotBlank()) {
                 "Project mode cannot be empty"

@@ -1,10 +1,12 @@
 package com.elitec.appmakeup.domain.template
 
+import com.elitec.appmakeup.domain.project.Project
+
 interface ProjectTemplate {
 
-    val id: String
-    val displayName: String
-    val description: String
-
-    fun structure(): ProjectStructure
+    /**
+     * Generates a logical project structure
+     * WITHOUT touching filesystem
+     */
+    fun structure(project: Project): ProjectStructure
 }

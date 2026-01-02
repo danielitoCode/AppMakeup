@@ -28,6 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ModelingScreen(
     projectLocation: ProjectLocation,
     mode: ModelingMode,
+    projectName: String,
     onBack: () -> Unit,
     viewModel: ModelingViewModel = koinViewModel()
 ) {
@@ -38,10 +39,10 @@ fun ModelingScreen(
         when (mode) {
             ModelingMode.CREATE -> {
                 // el proyecto YA fue creado, solo cargar
-                viewModel.initialize(projectLocation)
+                viewModel.initialize(projectLocation, projectName)
             }
             ModelingMode.OPEN -> {
-                viewModel.initialize(projectLocation)
+                viewModel.initialize(projectLocation, projectName)
             }
         }
     }

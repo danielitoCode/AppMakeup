@@ -96,38 +96,30 @@ fun AppRoot(
                 composable<AppDestination.Welcome> {
                     WelcomeScreen(
                         isDarkTheme = appUiState.isDarkTheme,
+                        isWindowsApp = isWindowsPlatform,
                         onToggleTheme = {
                             appUiState = appUiState.copy(
                                 isDarkTheme = !appUiState.isDarkTheme
                             )
                         },
-                        onNavigateToModeling = { location ->
-                            navController.navigate(
-                                AppDestination.Modeling(location.value, ModelingMode.OPEN.name)
-                            )
-                        },
-                        isWindowsApp = isWindowsPlatform,
-                        onOpenProject = { location ->
-                            RecentProjectsCache.add(location)
-                            appUiState = appUiState.copy(
-                                recentProjects = RecentProjectsCache.get()
-                            )
+                        onNavigateToModeling = { workspace, projectName ->
                             navController.navigate(
                                 AppDestination.Modeling(
-                                    location.value,
-                                    ModelingMode.CREATE.name
+                                    workspacePath = workspace.value,
+                                    projectName = projectName,
+                                    mode = ModelingMode.OPEN.name
                                 )
                             )
                         }
                     )
                 }
                 composable<AppDestination.Modeling> { backStackEntry ->
-                    val path = backStackEntry.toRoute<AppDestination.Modeling>().path
-                    val mode = backStackEntry.toRoute<AppDestination.Modeling>().mode
-                    val location = ProjectLocation(path)
+                    val route = backStackEntry.toRoute<AppDestination.Modeling>()
+
                     ModelingScreen(
-                        projectLocation = location,
-                        mode = mode.toModelingMode(),
+                        projectLocation = ProjectLocation(route.workspacePath),
+                        projectName = route.projectName,
+                        mode = route.mode.toModelingMode(),
                         onBack = { navController.popBackStack() }
                     )
                 }

@@ -12,19 +12,34 @@ class ValidateExistingProjectUseCase(
     private val fileSystem: FileSystem
 ) {
 
-    fun execute(location: ProjectLocation): ProjectValidationResult {
-        val path = location.value.toPath()
+    fun execute(
+        location: ProjectLocation,
+        projectName: String
+    ): ProjectValidationResult {
 
-        if (!fileSystem.exists(path)) {
+        val projectDir = location.value.toPath() / projectName
+
+        // 1️⃣ Workspace existe
+        if (!fileSystem.exists(location.value.toPath())) {
             return ProjectValidationResult.Invalid.DirectoryNotFound
         }
 
+        // 2️⃣ Proyecto existe
+        if (!fileSystem.exists(projectDir)) {
+            return ProjectValidationResult.Invalid.MissingProjectFile
+        }
+
+        // 3️⃣ Intentar cargar proyecto
         val project = try {
-            projectRepository.load(location)
+            projectRepository.load(
+                location = location,
+                projectName = projectName
+            )
         } catch (e: Exception) {
             return ProjectValidationResult.Invalid.InvalidProjectFile
         } ?: return ProjectValidationResult.Invalid.MissingProjectFile
 
+        // 4️⃣ Validar versión
         return when {
             project.version > CURRENT_PROJECT_VERSION ->
                 ProjectValidationResult.Invalid.UnsupportedVersion(

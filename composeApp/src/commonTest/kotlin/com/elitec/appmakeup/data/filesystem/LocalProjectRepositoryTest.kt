@@ -19,6 +19,7 @@ import org.koin.test.inject
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -42,19 +43,12 @@ class LocalProjectRepositoryTest : KoinTest {
     }
 
     @Test
-    fun `save, load and generate structure using fake filesystem`() {
+    fun `save and load project using fake filesystem`() {
 
         val project = Project(
             name = "TaskManager",
             packageName = "com.example.taskmanager",
-            architecture = ArchitectureConfig(
-                layers = listOf(
-                    Layer.DOMAIN,
-                    Layer.DATA,
-                    Layer.PRESENTATION,
-                    Layer.INFRASTRUCTURE
-                )
-            ),
+            architecture = ArchitectureConfig.default(),
             features = listOf(
                 Feature(
                     name = "task",
@@ -70,17 +64,20 @@ class LocalProjectRepositoryTest : KoinTest {
         )
 
         repository.save(location, project)
-        repository.generateStructure(location, project)
 
-        val loaded = repository.load(location, "TaskManager")
+        val loaded = repository.load(
+            location = location,
+            projectName = "TaskManager"
+        )
+
         assertNotNull(loaded)
+        assertEquals("TaskManager", loaded.name)
 
         assertTrue(
-            (repository as LocalProjectRepository)
-                .let { true } // solo para asegurar que es implementación real
+            fileSystem.exists(
+                "/workspace/TaskManager/${LocalProjectRepository.PROJECT_FILE_NAME}"
+                    .toPath()
+            )
         )
-        assertTrue(fileSystem.exists("/workspace/TaskManager/features/task/domain".toPath()))
-        assertTrue(fileSystem.exists("/workspace/TaskManager/features/task/data".toPath()))
-        assertTrue(fileSystem.exists("/workspace/TaskManager/features/task/presentation".toPath()))
     }
 }

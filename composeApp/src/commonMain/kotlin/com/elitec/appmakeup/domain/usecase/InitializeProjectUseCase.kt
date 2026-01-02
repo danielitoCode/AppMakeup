@@ -6,13 +6,22 @@ import com.elitec.appmakeup.domain.project.ProjectLocation
 class InitializeProjectUseCase(
     private val loadProject: LoadProjectUseCase
 ) {
+
     /**
-     * Inicializa el proyecto en una ubicación:
-     * - si existe (hay json), lo carga
-     * - si no existe, crea uno nuevo con el factory provisto
+     * Inicializa un proyecto existente dentro de un workspace.
+     *
+     * - Si existe el proyecto (json presente), lo carga
+     * - Si no existe, falla explícitamente
      */
-    fun execute(location: ProjectLocation): Project {
-        return loadProject.execute(location)
-            ?: error("Project not found at ${location.value}")
+    fun execute(
+        location: ProjectLocation,
+        projectName: String
+    ): Project {
+        return loadProject.execute(
+            location = location,
+            projectName = projectName
+        ) ?: error(
+            "Project '$projectName' not found at ${location.value}"
+        )
     }
 }

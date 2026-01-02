@@ -12,11 +12,16 @@ class LocalProjectRepository(
     private val json: Json
 ) : ProjectRepository {
 
-    private val projectFileName = "project.amk.json"
+    companion object {
+        const val PROJECT_FILE_NAME = "project.amk.json"
+    }
 
-    override fun load(location: ProjectLocation): Project? {
-        val projectRoot = location.value.toPath()
-        val projectFile = projectRoot / projectFileName
+    override fun load(
+        location: ProjectLocation,
+        projectName: String
+    ): Project? {
+        val projectDir = location.value.toPath() / projectName
+        val projectFile = projectDir / PROJECT_FILE_NAME
 
         if (!fileSystem.exists(projectFile)) return null
 
@@ -25,16 +30,14 @@ class LocalProjectRepository(
         }
     }
 
-    override fun save(location: ProjectLocation, project: Project) {
-        println("save project in ${location.value}")
+    override fun save(
+        location: ProjectLocation,
+        project: Project
+    ) {
+        val projectDir = location.value.toPath() / project.name
+        fileSystem.createDirectories(projectDir)
 
-        val projectRoot = location.value.toPath()
-
-        // 🔴 ESTA LÍNEA ES CRÍTICA
-        fileSystem.createDirectories(projectRoot)
-
-        val projectFile = projectRoot / projectFileName
-
+        val projectFile = projectDir / PROJECT_FILE_NAME
         fileSystem.write(projectFile) {
             writeUtf8(json.encodeToString(project))
         }

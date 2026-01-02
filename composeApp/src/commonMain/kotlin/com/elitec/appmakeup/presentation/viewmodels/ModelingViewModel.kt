@@ -64,15 +64,22 @@ class ModelingViewModel(
             )
         }
     }
-    fun initialize(location: ProjectLocation) {
+    fun initialize(
+        location: ProjectLocation,
+        projectName: String
+    ) {
         if (_state.value.project != null) return
 
-        val project = initializeProject.execute(location)
+        val project = initializeProject.execute(
+            location = location,
+            projectName = projectName
+        )
 
         _state.update {
             it.copy(
                 project = project,
                 location = location,
+                selectedFeatureName = project.features.firstOrNull()?.name,
                 isDirty = false,
                 validationErrors = emptyList()
             )

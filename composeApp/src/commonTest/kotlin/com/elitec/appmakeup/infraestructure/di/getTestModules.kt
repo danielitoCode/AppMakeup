@@ -10,14 +10,13 @@ import org.koin.dsl.module
 
 fun getTestModules(): Module = module {
 
-    single<FileSystem> {
-        FakeFileSystem()
-    }
+    single<FileSystem> { FakeFileSystem() }
 
-    single {
+    single<Json> {
         Json {
             prettyPrint = true
             encodeDefaults = true
+            classDiscriminator = "type"
         }
     }
 

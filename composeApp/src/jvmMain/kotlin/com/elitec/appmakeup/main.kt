@@ -13,6 +13,7 @@ import appmakeup.composeapp.generated.resources.toolicon
 import com.elitec.appmakeup.infraestructure.di.getCacheModules
 import com.elitec.appmakeup.infraestructure.di.getDataModule
 import com.elitec.appmakeup.infraestructure.di.getDomainModule
+import com.elitec.appmakeup.infraestructure.di.getFileSystemModule
 import com.elitec.appmakeup.infraestructure.di.getMigrationModule
 import com.elitec.appmakeup.infraestructure.di.getTemplateModule
 import com.elitec.appmakeup.infraestructure.di.getViewModelModule
@@ -30,6 +31,7 @@ fun main() = application {
             getDataModule(),
             getCacheModules(),
             getMigrationModule(),
+            getFileSystemModule(),
             getTemplateModule(),
             getDomainModule(),
             getViewModelModule()

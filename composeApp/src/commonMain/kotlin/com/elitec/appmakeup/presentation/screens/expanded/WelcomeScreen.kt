@@ -53,14 +53,14 @@ import com.elitec.appmakeup.presentation.components.CreatingProjectOverlay
 import com.elitec.appmakeup.presentation.components.RecentProjectsSection
 import com.elitec.appmakeup.presentation.util.pickDirectory
 import com.elitec.appmakeup.presentation.viewmodels.WelcomeViewModel
+import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WelcomeScreen(
     onToggleTheme: () -> Unit,
-    onNavigateToModeling: (ProjectLocation) -> Unit,
-    onOpenProject: (ProjectLocation) -> Unit,
+    onNavigateToModeling: (ProjectLocation, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: WelcomeViewModel = koinViewModel(),
     isWindowsApp: Boolean = true,
@@ -70,6 +70,7 @@ fun WelcomeScreen(
     val iconThemeButton by animateColorAsState(MaterialTheme.colorScheme.onBackground)
 
     var showCreateDialog by remember { mutableStateOf(false) }
+
 
     Box(
         contentAlignment = Alignment.TopStart,
@@ -172,8 +173,17 @@ fun WelcomeScreen(
                             OutlinedButton(
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
-                                    val directory = pickDirectory() ?: return@OutlinedButton
-                                    onOpenProject(ProjectLocation(directory))
+                                    val selectedDir = pickDirectory() ?: return@OutlinedButton
+
+                                    val projectPath = selectedDir.toPath()
+                                    val projectName = projectPath.name
+                                    val workspacePath = projectPath.parent ?: return@OutlinedButton
+
+                                    viewModel.openExistingProject(
+                                        location = ProjectLocation(workspacePath.toString()),
+                                        projectName = projectName,
+                                        onSuccess = onNavigateToModeling
+                                    )
                                 }
                             ) {
                                 Icon(
@@ -203,6 +213,7 @@ fun WelcomeScreen(
             // -------------------------
             // Recent projects
             // -------------------------
+
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth()
             ) {
@@ -210,14 +221,23 @@ fun WelcomeScreen(
                     visible = state.recentProjects.isNotEmpty()
                 ) {
                     RecentProjectsSection(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(10.dp),
+                        modifier = Modifier.fillMaxWidth().padding(10.dp),
                         projects = state.recentProjects,
                         onOpenProject = { location ->
-                            viewModel.openExistingProject(
-                                location = location,
-                                onSuccess = onNavigateToModeling
-                            )
+
+                            val projectPath = location.value.toPath()
+                            val projectName = projectPath.name
+                            val workspacePath = projectPath.parent
+
+                            if (workspacePath != null) {
+                                viewModel.openExistingProject(
+                                    location = ProjectLocation(workspacePath.toString()),
+                                    projectName = projectName,
+                                    onSuccess = onNavigateToModeling
+                                )
+                            } else {
+                                viewModel.clearError() // o setError si tienes
+                            }
                         }
                     )
                 }
@@ -232,9 +252,9 @@ fun WelcomeScreen(
                 onCreate = { config ->
                     viewModel.createNewProject(
                         config = config,
-                        onSuccess = { location ->
+                        onSuccess = { workspace, projectName ->
                             showCreateDialog = false
-                            onNavigateToModeling(location)
+                            onNavigateToModeling(workspace, projectName)
                         }
                     )
                 }

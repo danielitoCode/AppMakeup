@@ -13,6 +13,7 @@ import com.elitec.appmakeup.domain.usecase.AddEntityPropertyUseCase
 import com.elitec.appmakeup.domain.usecase.AddFeatureUseCase
 import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
 import com.elitec.appmakeup.domain.usecase.GenerateProjectStructureUseCase
+import com.elitec.appmakeup.domain.usecase.InitializeProjectUseCase
 import com.elitec.appmakeup.domain.usecase.ValidateProjectUseCase
 import com.elitec.appmakeup.domain.validation.RuleViolation
 import com.elitec.appmakeup.infraestructure.di.getTestCaseUseModule
@@ -29,9 +30,10 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class ModelingViewModelTest: KoinTest {
+class ModelingViewModelTest : KoinTest {
 
     private val location = ProjectLocation("/workspace")
 
@@ -40,12 +42,14 @@ class ModelingViewModelTest: KoinTest {
     private val addFeature: AddFeatureUseCase by inject()
     private val addEntity: AddEntityPropertyUseCase by inject()
     private val create: CreateProjectUseCase by inject()
+    private val initialize: InitializeProjectUseCase by inject()
 
     @BeforeTest
     fun setup() {
         startKoin {
             modules(
-                getTestModules(), getTestValidationModule(),
+                getTestModules(),
+                getTestValidationModule(),
                 getTestCaseUseModule()
             )
         }
@@ -54,28 +58,14 @@ class ModelingViewModelTest: KoinTest {
     private fun baseProject() = Project(
         name = "MyApp",
         packageName = "com.example.myapp",
-        architecture = ArchitectureConfig(
-            layers = listOf(
-                Layer.DOMAIN,
-                Layer.DATA,
-                Layer.PRESENTATION,
-                Layer.INFRASTRUCTURE
-            )
-        ),
+        architecture = ArchitectureConfig.default(),
         features = emptyList()
     )
 
     @Test
     fun `create project initializes state`() = runTest {
 
-        val viewModel = ModelingViewModel(
-            createProject = create,
-            addFeature = addFeature,
-            addEntityProperty = addEntity,
-            validateProject = validate,
-            generateStructure = generate
-        )
-
+        val viewModel = createViewModel()
         val project = baseProject()
 
         viewModel.createProject(project, location)
@@ -83,13 +73,13 @@ class ModelingViewModelTest: KoinTest {
         val state = viewModel.state.value
         assertEquals(project, state.project)
         assertEquals(location, state.location)
-        assertTrue(!state.isDirty)
+        assertFalse(state.isDirty)
     }
 
     @Test
     fun `add feature marks project as dirty`() = runTest {
-        val viewModel = createViewModel()
 
+        val viewModel = createViewModel()
         viewModel.createProject(baseProject(), location)
 
         val feature = Feature(
@@ -109,6 +99,7 @@ class ModelingViewModelTest: KoinTest {
 
     @Test
     fun `add property updates entity`() = runTest {
+
         val viewModel = createViewModel()
 
         val feature = Feature(
@@ -121,9 +112,10 @@ class ModelingViewModelTest: KoinTest {
             location
         )
 
+        viewModel.selectFeature("task")
+
         viewModel.addProperty(
-            featureName = "task",
-            property = EntityProperty(
+            EntityProperty(
                 name = "id",
                 type = PropertyType.StringType
             )
@@ -138,20 +130,14 @@ class ModelingViewModelTest: KoinTest {
 
     @Test
     fun `generate stops on validation errors`() = runTest {
-        val viewModel = ModelingViewModel(
-            createProject = create,
-            addFeature = addFeature,
-            addEntityProperty = addEntity,
-            validateProject = validate,
-            generateStructure = generate
-        )
 
+        val viewModel = createViewModel()
         viewModel.createProject(baseProject(), location)
+
         viewModel.generate()
 
         val state = viewModel.state.value
         assertTrue(state.validationErrors.isNotEmpty())
-        //assertTrue(!generate.)
     }
 
     private fun createViewModel(): ModelingViewModel =
@@ -160,7 +146,8 @@ class ModelingViewModelTest: KoinTest {
             addFeature = addFeature,
             addEntityProperty = addEntity,
             validateProject = validate,
-            generateStructure = generate
+            generateStructure = generate,
+            initializeProject = initialize
         )
 
     @AfterTest
