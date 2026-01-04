@@ -1,6 +1,6 @@
 package com.elitec.appmakeup.presentation.cache
 
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectLocation
 import io.github.reactivecircus.cache4k.Cache
 
 object RecentProjectsCache {

@@ -1,15 +1,12 @@
 package com.elitec.appmakeup.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.elitec.appmakeup.domain.modeling.Feature
-import com.elitec.appmakeup.domain.modeling.entity.EntityProperty
-import com.elitec.appmakeup.domain.project.Project
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.codegen.CodeGenerator
+import com.elitec.appmakeup.domain.model.EntityProperty
+import com.elitec.appmakeup.domain.model.Feature
+import com.elitec.appmakeup.domain.model.Project
 import com.elitec.appmakeup.domain.usecase.AddEntityPropertyUseCase
 import com.elitec.appmakeup.domain.usecase.AddFeatureUseCase
-import com.elitec.appmakeup.domain.usecase.CreateProjectUseCase
-import com.elitec.appmakeup.domain.usecase.GenerateProjectStructureUseCase
-import com.elitec.appmakeup.domain.usecase.InitializeProjectUseCase
 import com.elitec.appmakeup.domain.usecase.ValidateProjectUseCase
 import com.elitec.appmakeup.presentation.uiStates.ModelingState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,160 +14,66 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class ModelingViewModel(
-    private val createProject: CreateProjectUseCase,
     private val addFeature: AddFeatureUseCase,
     private val addEntityProperty: AddEntityPropertyUseCase,
     private val validateProject: ValidateProjectUseCase,
-    private val generateStructure: GenerateProjectStructureUseCase,
-    private val initializeProject: InitializeProjectUseCase
-): ViewModel() {
+    private val codeGenerator: CodeGenerator
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ModelingState())
     val state: StateFlow<ModelingState> = _state
 
-    // -------------------------
-    // Project lifecycle
-    // -------------------------
-
-    fun createProject(project: Project, location: ProjectLocation) {
-        createProject.execute(location, project)
-
+    fun initialize(project: Project) {
         _state.value = ModelingState(
             project = project,
-            location = location,
+            selectedFeatureName = project.features.firstOrNull()?.name,
             isDirty = false
         )
     }
 
-    // -------------------------
-    // Feature / Entity modeling
-    // -------------------------
-
     fun addFeature(feature: Feature) {
-        val current = requireProjectAndLocation()
-
-        val updated = addFeature.execute(
-            location = current.location,
-            project = current.project,
-            feature = feature
-        )
+        val project = requireProject()
+        val updated = addFeature.execute(project, feature)
 
         _state.update {
             it.copy(
                 project = updated,
                 selectedFeatureName = feature.name,
-                isDirty = true,
-                validationErrors = emptyList()
-            )
-        }
-    }
-    fun initialize(
-        location: ProjectLocation,
-        projectName: String
-    ) {
-        if (_state.value.project != null) return
-
-        val project = initializeProject.execute(
-            location = location,
-            projectName = projectName
-        )
-
-        _state.update {
-            it.copy(
-                project = project,
-                location = location,
-                selectedFeatureName = project.features.firstOrNull()?.name,
-                isDirty = false,
-                validationErrors = emptyList()
+                isDirty = true
             )
         }
     }
 
     fun addProperty(property: EntityProperty) {
-        val current = requireProjectAndLocation()
-        val selected = _state.value.selectedFeatureName
-            ?: error("No feature selected")
+        val project = requireProject()
+        val featureName = _state.value.selectedFeatureName ?: return
 
         val updated = addEntityProperty.execute(
-            location = current.location,
-            project = current.project,
-            featureName = selected,
+            project = project,
+            featureName = featureName,
             property = property
         )
 
-        updateProject(updated)
-    }
-
-    // -------------------------
-    // Persistence & generation
-    // -------------------------
-
-    fun save() {
-        val current = requireProjectAndLocation()
-
-        createProject.execute(current.location, current.project)
-
-        _state.update {
-            it.copy(isDirty = false)
-        }
+        _state.update { it.copy(project = updated, isDirty = true) }
     }
 
     fun generate() {
-        val current = requireProjectAndLocation()
+        val project = requireProject()
 
-        val violations = validateProject.execute(current.project)
-
-        if (violations.isNotEmpty()) {
-            _state.update {
-                it.copy(validationErrors = violations)
-            }
+        val errors = validateProject.execute(project)
+        if (errors.isNotEmpty()) {
+            _state.update { it -> it.copy(validationErrors = errors.map { it }) }
             return
         }
 
-        generateStructure.execute(
-            location = current.location,
-            project = current.project
-        )
-
-        _state.update {
-            it.copy(validationErrors = emptyList())
-        }
+        val tree = codeGenerator.generate(project)
+        _state.update { it.copy(codeTree = tree, validationErrors = emptyList()) }
     }
 
-    // -------------------------
-    // Internal helpers
-    // -------------------------
-
-    private fun updateProject(project: Project) {
-        _state.update {
-            it.copy(
-                project = project,
-                isDirty = true,
-                validationErrors = emptyList()
-            )
-        }
+    fun selectFeature(name: String) {
+        _state.update { it.copy(selectedFeatureName = name) }
     }
 
-    private fun requireProjectAndLocation(): ModelingContext {
-        val state = _state.value
-
-        val project = state.project
-            ?: error("Project not initialized")
-
-        val location = state.location
-            ?: error("ProjectLocation not set")
-
-        return ModelingContext(project, location)
-    }
-
-    private data class ModelingContext(
-        val project: Project,
-        val location: ProjectLocation
-    )
-
-    fun selectFeature(featureName: String) {
-        _state.update {
-            it.copy(selectedFeatureName = featureName)
-        }
-    }
+    private fun requireProject(): Project =
+        _state.value.project ?: error("Project not initialized")
 }

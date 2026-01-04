@@ -1,11 +1,11 @@
 package com.elitec.appmakeup.domain.codegen
 
-import com.elitec.appmakeup.domain.project.Project
-import com.elitec.appmakeup.domain.template.ProjectTemplate
+import com.elitec.appmakeup.domain.model.Project
 
 interface CodeGenerator {
-    fun generate(
-        project: Project,
-        template: ProjectTemplate
-    ): GeneratedDirectory
+    /**
+     * Generates in-memory source code representation.
+     * No filesystem, no templates, no IO.
+     */
+    fun generate(project: Project): CodeTree
 }

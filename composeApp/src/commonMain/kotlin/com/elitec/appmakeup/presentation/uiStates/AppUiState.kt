@@ -1,6 +1,6 @@
 package com.elitec.appmakeup.presentation.uiStates
 
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectLocation
 
 data class AppUiState(
     val isDarkTheme: Boolean = true,

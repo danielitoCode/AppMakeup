@@ -1,7 +1,7 @@
 package com.elitec.appmakeup.presentation.uiStates
 
-import com.elitec.appmakeup.domain.project.Project
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.Project
+import com.elitec.appmakeup.domain.model.ProjectLocation
 
 sealed class AppState {
 
