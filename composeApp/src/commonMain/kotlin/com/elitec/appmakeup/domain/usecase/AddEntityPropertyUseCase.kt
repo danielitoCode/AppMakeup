@@ -1,16 +1,11 @@
 package com.elitec.appmakeup.domain.usecase
 
-import com.elitec.appmakeup.domain.modeling.entity.EntityProperty
-import com.elitec.appmakeup.domain.project.Project
-import com.elitec.appmakeup.domain.project.ProjectLocation
-import com.elitec.appmakeup.domain.repository.ProjectRepository
+import com.elitec.appmakeup.domain.model.EntityProperty
+import com.elitec.appmakeup.domain.model.Project
 
-class AddEntityPropertyUseCase(
-    private val repository: ProjectRepository
-) {
+class AddEntityPropertyUseCase {
 
     fun execute(
-        location: ProjectLocation,
         project: Project,
         featureName: String,
         property: EntityProperty
@@ -18,17 +13,14 @@ class AddEntityPropertyUseCase(
 
         val updatedFeatures = project.features.map { feature ->
             if (feature.name == featureName) {
-                val updatedEntity = feature.entity.copy(
-                    properties = feature.entity.properties + property
+                feature.copy(
+                    entity = feature.entity.copy(
+                        properties = feature.entity.properties + property
+                    )
                 )
-                feature.copy(entity = updatedEntity)
-            } else {
-                feature
-            }
+            } else feature
         }
 
-        val updatedProject = project.copy(features = updatedFeatures)
-        repository.save(location, updatedProject)
-        return updatedProject
+        return project.copy(features = updatedFeatures)
     }
 }

@@ -1,6 +1,6 @@
 package com.elitec.appmakeup.presentation.util
 
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectLocation
 import okio.Path.Companion.toPath
 
 data class CreateProjectConfig(

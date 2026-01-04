@@ -10,13 +10,7 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import appmakeup.composeapp.generated.resources.Res
 import appmakeup.composeapp.generated.resources.toolicon
-import com.elitec.appmakeup.infraestructure.di.getCacheModules
-import com.elitec.appmakeup.infraestructure.di.getDataModule
-import com.elitec.appmakeup.infraestructure.di.getDomainModule
-import com.elitec.appmakeup.infraestructure.di.getFileSystemModule
-import com.elitec.appmakeup.infraestructure.di.getMigrationModule
-import com.elitec.appmakeup.infraestructure.di.getTemplateModule
-import com.elitec.appmakeup.infraestructure.di.getViewModelModule
+import com.elitec.appmakeup.infrastructure.di.appModules
 import com.elitec.appmakeup.presentation.AppRoot
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.context.startKoin
@@ -28,13 +22,7 @@ fun main() = application {
     )
     startKoin {
         modules(
-            getDataModule(),
-            getCacheModules(),
-            getMigrationModule(),
-            getFileSystemModule(),
-            getTemplateModule(),
-            getDomainModule(),
-            getViewModelModule()
+            appModules
         )
     }
     Window(

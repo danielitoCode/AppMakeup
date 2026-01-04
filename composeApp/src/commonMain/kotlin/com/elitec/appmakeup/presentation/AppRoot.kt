@@ -1,33 +1,29 @@
 package com.elitec.appmakeup.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectSession
 import com.elitec.appmakeup.presentation.cache.RecentProjectsCache
 import com.elitec.appmakeup.presentation.components.WindowsToolBar
 import com.elitec.appmakeup.presentation.navigation.AppDestination
-import com.elitec.appmakeup.presentation.screens.expanded.ModelingScreen
+import com.elitec.appmakeup.presentation.screens.ModelingScreen
 import com.elitec.appmakeup.presentation.screens.expanded.SplashScreen
-import com.elitec.appmakeup.presentation.screens.expanded.WelcomeScreen
+import com.elitec.appmakeup.presentation.screens.WelcomeScreen
 import com.elitec.appmakeup.presentation.theme.AppMakeupTheme
 import com.elitec.appmakeup.presentation.uiStates.AppUiState
 import com.elitec.appmakeup.presentation.util.ModelingMode
@@ -102,11 +98,11 @@ fun AppRoot(
                                 isDarkTheme = !appUiState.isDarkTheme
                             )
                         },
-                        onNavigateToModeling = { workspace, projectName ->
+                        onNavigateToModeling = { project ->
+                            ProjectSession.open(project)
+
                             navController.navigate(
                                 AppDestination.Modeling(
-                                    workspacePath = workspace.value,
-                                    projectName = projectName,
                                     mode = ModelingMode.OPEN.name
                                 )
                             )
@@ -116,11 +112,16 @@ fun AppRoot(
                 composable<AppDestination.Modeling> { backStackEntry ->
                     val route = backStackEntry.toRoute<AppDestination.Modeling>()
 
+                    val project = ProjectSession.current
+                        ?: error("Project not initialized")
+
                     ModelingScreen(
-                        projectLocation = ProjectLocation(route.workspacePath),
-                        projectName = route.projectName,
+                        project = project,
                         mode = route.mode.toModelingMode(),
-                        onBack = { navController.popBackStack() }
+                        onBack = {
+                            ProjectSession.clear()
+                            navController.popBackStack()
+                        }
                     )
                 }
             }

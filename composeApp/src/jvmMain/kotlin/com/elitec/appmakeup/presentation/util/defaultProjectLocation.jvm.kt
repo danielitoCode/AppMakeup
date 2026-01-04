@@ -1,6 +1,6 @@
 package com.elitec.appmakeup.presentation.util
 
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectLocation
 import java.nio.file.Paths
 
 actual fun defaultProjectLocation(): ProjectLocation {

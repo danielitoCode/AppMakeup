@@ -18,7 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.elitec.appmakeup.domain.modeling.Feature
+import com.elitec.appmakeup.domain.model.Feature
 
 @Composable
 fun FeatureListPanel(

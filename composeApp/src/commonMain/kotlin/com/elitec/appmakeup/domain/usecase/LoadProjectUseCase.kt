@@ -1,19 +1,17 @@
 package com.elitec.appmakeup.domain.usecase
 
-import com.elitec.appmakeup.domain.project.Project
-import com.elitec.appmakeup.domain.project.ProjectLocation
-import com.elitec.appmakeup.domain.repository.ProjectRepository
+import com.elitec.appmakeup.domain.model.Project
+import com.elitec.appmakeup.domain.model.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectRepository
 
 class LoadProjectUseCase(
     private val repository: ProjectRepository
 ) {
-    fun execute(
-        location: ProjectLocation,
-        projectName: String
-    ): Project? {
-        return repository.load(
-            location = location,
-            projectName = projectName
-        )
+    /**
+     * Loads an existing project from disk.
+     * Returns null if not found or invalid.
+     */
+    fun execute(location: ProjectLocation): Project? {
+        return repository.load(location)
     }
 }

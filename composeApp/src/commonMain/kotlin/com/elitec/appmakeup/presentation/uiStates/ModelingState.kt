@@ -1,13 +1,13 @@
 package com.elitec.appmakeup.presentation.uiStates
 
-import com.elitec.appmakeup.domain.project.Project
-import com.elitec.appmakeup.domain.project.ProjectLocation
-import com.elitec.appmakeup.domain.validation.RuleViolation
+import com.elitec.appmakeup.domain.codegen.CodeTree
+import com.elitec.appmakeup.domain.model.Project
+import com.elitec.appmakeup.domain.model.ProjectLocation
 
 data class ModelingState(
     val project: Project? = null,
-    val location: ProjectLocation? = null,
     val selectedFeatureName: String? = null,
-    val validationErrors: List<RuleViolation> = emptyList(),
+    val codeTree: CodeTree? = null,
+    val validationErrors: List<String> = emptyList(),
     val isDirty: Boolean = false
 )

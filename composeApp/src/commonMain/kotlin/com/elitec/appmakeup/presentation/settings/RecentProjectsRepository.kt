@@ -1,6 +1,6 @@
 package com.elitec.appmakeup.presentation.settings
 
-import com.elitec.appmakeup.domain.project.ProjectLocation
+import com.elitec.appmakeup.domain.model.ProjectLocation
 
 class RecentProjectsRepository(
     private val store: AppSettingsStore

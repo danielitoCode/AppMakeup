@@ -2,7 +2,7 @@ package com.elitec.appmakeup.presentation.util
 
 import com.elitec.appmakeup.domain.architecture.ArchitectureConfig
 import com.elitec.appmakeup.domain.architecture.Layer
-import com.elitec.appmakeup.domain.project.Project
+import com.elitec.appmakeup.domain.model.Project
 
 fun createProjectFromConfig(config: CreateProjectConfig): Project =
     Project(
