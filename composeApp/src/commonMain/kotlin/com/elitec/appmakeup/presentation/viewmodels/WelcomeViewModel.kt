@@ -38,6 +38,7 @@ class WelcomeViewModel(
 
         // 3️⃣ Persistir proyecto (se crea /<project.name>)
         createProject.execute(
+            location = workspace,
             project = project
         )
 
