@@ -1,23 +1,19 @@
-package com.elitec.appmakeup.projects.usecase
+package com.elitec.appmakeup.projects.usecase.feature
 
-import com.elitec.appmakeup.projects.model.AppFeature
 import com.elitec.appmakeup.projects.model.AppMakeupProject
 import com.elitec.appmakeup.projects.persistence.ProjectPersistence
 
-class UpdateFeatureUseCase(
+class RemoveFeatureUseCase(
     private val persistence: ProjectPersistence
 ) {
 
     fun execute(
         project: AppMakeupProject,
-        featureName: String,
-        updatedFeature: AppFeature
+        featureName: String
     ): AppMakeupProject {
 
         val updated = project.copy(
-            features = project.features.map {
-                if (it.name == featureName) updatedFeature else it
-            }
+            features = project.features.filterNot { it.name == featureName }
         )
 
         persistence.save(updated)

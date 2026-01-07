@@ -1,24 +1,26 @@
-package com.elitec.appmakeup.projects.usecase
+package com.elitec.appmakeup.projects.usecase.property
 
 import com.elitec.appmakeup.projects.model.AppMakeupProject
+import com.elitec.appmakeup.projects.model.AppProperty
 import com.elitec.appmakeup.projects.persistence.ProjectPersistence
 
-class RemovePropertyUseCase(
+class UpdatePropertyUseCase(
     private val persistence: ProjectPersistence
 ) {
 
     fun execute(
         project: AppMakeupProject,
         featureName: String,
-        propertyName: String
+        propertyName: String,
+        updatedProperty: AppProperty
     ): AppMakeupProject {
 
         val updated = project.copy(
             features = project.features.map { feature ->
                 if (feature.name == featureName) {
                     feature.copy(
-                        properties = feature.properties.filterNot {
-                            it.name == propertyName
+                        properties = feature.properties.map {
+                            if (it.name == propertyName) updatedProperty else it
                         }
                     )
                 } else feature

@@ -1,4 +1,4 @@
-package com.elitec.appmakeup.projects.usecase
+package com.elitec.appmakeup.projects.usecase.project
 
 import com.elitec.appmakeup.projects.model.AppMakeupProject
 import com.elitec.appmakeup.projects.persistence.ProjectPersistence
