@@ -1,0 +1,41 @@
+package com.elitec.appmakeup.core.v4.validation
+
+import com.elitec.appmakeup.core.v4.contracts.RepositoryContract
+
+class RepositoryContractValidator(
+    private val entityValidator: EntityValidator = EntityValidator()
+) : Validator<RepositoryContract> {
+
+    override fun validate(target: RepositoryContract): ValidationResult {
+
+        // 1. Validar entidad asociada
+        val entityResult = entityValidator.validate(target.entity)
+        if (!entityResult.isValid()) {
+            return entityResult
+        }
+
+        // 2. Al menos una operación debe estar soportada
+        if (
+            !target.supportsCreate &&
+            !target.supportsRead &&
+            !target.supportsUpdate &&
+            !target.supportsDelete
+        ) {
+            return ValidationResult.Invalid(
+                "Repository for entity ${target.entity.name} must support at least one operation"
+            )
+        }
+
+        // 3. Operaciones de escritura requieren identificador
+        val hasWriteOperations =
+            target.supportsCreate || target.supportsUpdate || target.supportsDelete
+
+        if (hasWriteOperations) {
+            return ValidationResult.Invalid(
+                "Repository with write operations requires entity ${target.entity.name} to have an identifier"
+            )
+        }
+
+        return ValidationResult.Valid
+    }
+}
