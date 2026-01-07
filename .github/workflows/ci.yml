@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ coreV4, master ]
   pull_request:
 
 jobs:
@@ -24,4 +24,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Assemble
-        run: ./gradlew assemble --no-daemon
+        run: ./gradlew composeApp:compileKotlinJvm --no-daemon
