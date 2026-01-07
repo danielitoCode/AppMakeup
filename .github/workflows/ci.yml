@@ -24,4 +24,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Assemble
-        run: ./gradlew assemble --no-daemon
+        run: ./gradlew composeApp:compileKotlinJvm --no-daemon
