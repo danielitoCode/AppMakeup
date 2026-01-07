@@ -1,4 +1,4 @@
-name: CI
+name: APPMakeup_CI
 
 on:
   push:
