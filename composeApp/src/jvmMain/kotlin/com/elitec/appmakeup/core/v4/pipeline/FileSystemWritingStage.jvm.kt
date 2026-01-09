@@ -4,7 +4,7 @@ import com.elitec.appmakeup.core.v4.contracts.GenerationResult
 import java.io.File
 
 class FileSystemWritingStage(
-    private val options: WritingOptions = WritingOptions()
+    private val options: WritingOptions = _root_ide_package_.com.elitec.appmakeup.core.v4.pipeline.WritingOptions()
 ) : WritingStage {
 
     override fun write(
