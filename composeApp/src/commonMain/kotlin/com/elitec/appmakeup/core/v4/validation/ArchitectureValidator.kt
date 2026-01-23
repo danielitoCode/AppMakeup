@@ -20,7 +20,15 @@ class ArchitectureValidator : Validator<Pair<CoreArchitecture, CoreFeature>> {
             )
         }
 
-        // 2️⃣ Reglas de dependencia
+        // 2) (Opcional) Asegurar que hay reglas para esas layers
+        val missingRules = feature.layers.filterNot { architecture.dependencyRules.containsKey(it) }.toSet()
+        if (missingRules.isNotEmpty()) {
+            return ValidationResult.Invalid(
+                "Architecture has no dependency rules for layers: $missingRules"
+            )
+        }
+
+        /*// 2️⃣ Reglas de dependencia
         architecture.dependencyRules.forEach { (layer, allowedDeps) ->
             if (feature.layers.contains(layer)) {
                 val invalidDeps = feature.layers - allowedDeps - layer
@@ -30,7 +38,7 @@ class ArchitectureValidator : Validator<Pair<CoreArchitecture, CoreFeature>> {
                     )
                 }
             }
-        }
+        }*/
 
         return ValidationResult.Valid
     }

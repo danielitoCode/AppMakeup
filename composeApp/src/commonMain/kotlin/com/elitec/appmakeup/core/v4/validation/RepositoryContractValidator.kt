@@ -8,13 +8,11 @@ class RepositoryContractValidator(
 
     override fun validate(target: RepositoryContract): ValidationResult {
 
-        // 1. Validar entidad asociada
+        // 1️⃣ Validar entidad
         val entityResult = entityValidator.validate(target.entity)
-        if (!entityResult.isValid()) {
-            return entityResult
-        }
+        if (!entityResult.isValid()) return entityResult
 
-        // 2. Al menos una operación debe estar soportada
+        // 2️⃣ Al menos una operación
         if (
             !target.supportsCreate &&
             !target.supportsRead &&
@@ -26,11 +24,11 @@ class RepositoryContractValidator(
             )
         }
 
-        // 3. Operaciones de escritura requieren identificador
+        // 3️⃣ Operaciones de escritura requieren identificador
         val hasWriteOperations =
             target.supportsCreate || target.supportsUpdate || target.supportsDelete
 
-        if (hasWriteOperations) {
+        if (hasWriteOperations && target.entity.identifier == null) {
             return ValidationResult.Invalid(
                 "Repository with write operations requires entity ${target.entity.name} to have an identifier"
             )
