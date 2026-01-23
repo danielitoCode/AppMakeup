@@ -1,43 +1,35 @@
 package com.elitec.appmakeup.core.v4.validation
 
 import com.elitec.appmakeup.core.v4.definition.CoreArchitecture
+import com.elitec.appmakeup.core.v4.definition.CoreFeature
 import com.elitec.appmakeup.core.v4.definition.CoreLayer
 
-class ArchitectureValidator : Validator<CoreArchitecture> {
+class ArchitectureValidator : Validator<Pair<CoreArchitecture, CoreFeature>> {
 
-    override fun validate(target: CoreArchitecture): ValidationResult {
+    override fun validate(
+        target: Pair<CoreArchitecture, CoreFeature>
+    ): ValidationResult {
 
-        if (target.supportedLayers.isEmpty()) {
-            return ValidationResult.Invalid("Architecture must support at least one layer")
-        }
+        val (architecture, feature) = target
 
-        target.dependencyRules.forEach { (from, dependencies) ->
-
-            if (!target.supportedLayers.contains(from)) {
-                return ValidationResult.Invalid(
-                    "Dependency rule defined for unsupported layer: $from"
-                )
-            }
-
-            dependencies.forEach { to ->
-                if (!target.supportedLayers.contains(to)) {
-                    return ValidationResult.Invalid(
-                        "Layer $from depends on unsupported layer $to"
-                    )
-                }
-
-                if (from == to) {
-                    return ValidationResult.Invalid(
-                        "Layer $from cannot depend on itself"
-                    )
-                }
-            }
-        }
-
-        if (target.canDependOn(CoreLayer.DOMAIN, CoreLayer.DATA)) {
+        // 1️⃣ Layers soportadas
+        val unsupported = feature.layers - architecture.supportedLayers
+        if (unsupported.isNotEmpty()) {
             return ValidationResult.Invalid(
-                "DOMAIN layer cannot depend on DATA layer"
+                "Feature '${feature.name}' uses unsupported layers: $unsupported"
             )
+        }
+
+        // 2️⃣ Reglas de dependencia
+        architecture.dependencyRules.forEach { (layer, allowedDeps) ->
+            if (feature.layers.contains(layer)) {
+                val invalidDeps = feature.layers - allowedDeps - layer
+                if (invalidDeps.isNotEmpty()) {
+                    return ValidationResult.Invalid(
+                        "Layer $layer cannot depend on $invalidDeps"
+                    )
+                }
+            }
         }
 
         return ValidationResult.Valid

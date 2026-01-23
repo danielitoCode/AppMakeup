@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elitec.appmakeup.presentation.util.pickDirectory
 import com.elitec.appmakeup.presentation.viewmodels.CreateProjectViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -47,7 +48,16 @@ fun CreateProjectScreen(
             value = state.path,
             onValueChange = viewModel::onPathChange,
             label = { Text("Ruta del proyecto") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                Button(
+                    onClick = {
+                        pickDirectory()?.let { viewModel.onPathChange(it) }
+                    }
+                ) {
+                    Text("Elegir")
+                }
+            }
         )
 
         state.error?.let {
