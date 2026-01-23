@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import appmakeup.composeapp.generated.resources.Res
-import appmakeup.composeapp.generated.resources.sinfotow
+import appmakeup.composeapp.generated.resources.sinfoto
 import com.elitec.appmakeup.presentation.navigation.MainScreens
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
@@ -29,7 +29,7 @@ fun SplashScreen(
         modifier = modifier.fillMaxSize()
     ) {
         Image(
-            painter = painterResource(Res.drawable.sinfotow),
+            painter = painterResource(Res.drawable.sinfoto),
             contentDescription = "",
             modifier = Modifier.size(200.dp)
         )

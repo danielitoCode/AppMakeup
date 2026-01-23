@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +33,8 @@ import androidx.compose.ui.window.application
 import appmakeup.composeapp.generated.resources.Res
 import appmakeup.composeapp.generated.resources.sinfotow
 import appmakeup.composeapp.generated.resources.toolicon
+import com.elitec.appmakeup.di.initKoin
+import com.elitec.appmakeup.presentation.navigation.MainNavigationWrapper
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.context.startKoin
 
@@ -39,8 +43,10 @@ fun main() = application {
         position = WindowPosition(alignment = Alignment.Center),
         placement = WindowPlacement.Floating
     )
-    startKoin {
+    LaunchedEffect(null) {
+        initKoin()
     }
+
     Window(
         resizable = false,
         undecorated = true,
@@ -108,8 +114,10 @@ fun main() = application {
                 }
             },
             bottomBar = {}
-        ) {
-
+        ) { innerPaddings ->
+            MainNavigationWrapper(
+                modifier = Modifier.fillMaxSize().padding(innerPaddings)
+            )
         }
     }
 }
