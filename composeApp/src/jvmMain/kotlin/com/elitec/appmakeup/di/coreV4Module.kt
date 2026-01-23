@@ -102,7 +102,7 @@ val coreV4Module = module {
     single<WritingStage> {
         FileSystemWritingStage(
             options = WritingOptions(
-                dryRun = false,
+                dryRun = true,
                 overwrite = true
             )
         )
