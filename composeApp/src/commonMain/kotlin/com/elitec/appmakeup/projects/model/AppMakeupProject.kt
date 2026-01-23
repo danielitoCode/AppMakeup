@@ -7,6 +7,8 @@ data class AppMakeupProject(
     val name: String,
     val packageName: String,
     val path: String,
-    val features: List<AppFeature>,
+    val features: List<AppFeature>
+) {
     val exportPath: String
-)
+        get() = "$path/export"
+}

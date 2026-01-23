@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface MainScreens {
-    sealed interface Splash: MainScreens
-    sealed interface CreateProject: MainScreens
-    sealed interface ProjectEditor: MainScreens
-    sealed interface Export: MainScreens
+    @Serializable object Splash: MainScreens
+    @Serializable object CreateProject: MainScreens
+    @Serializable object Home: MainScreens
+    @Serializable data class ProjectEditor(val path: String): MainScreens
+    @Serializable data class Export(val path: String): MainScreens
 }
