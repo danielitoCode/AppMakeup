@@ -21,7 +21,7 @@ fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(null) {
-        delay(1000)
+        delay(2000)
         navigateTo(MainScreens.Home)
     }
     Box(

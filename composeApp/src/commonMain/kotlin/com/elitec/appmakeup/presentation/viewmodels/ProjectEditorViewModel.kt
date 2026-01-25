@@ -1,6 +1,9 @@
 package com.elitec.appmakeup.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.elitec.appmakeup.core.v4.definition.CoreEntity
+import com.elitec.appmakeup.core.v4.definition.CoreLayer
+import com.elitec.appmakeup.core.v4.definition.CoreProperty
 import com.elitec.appmakeup.generation.GenerateCodeUseCase
 import com.elitec.appmakeup.presentation.states.ProjectEditorUiState
 import com.elitec.appmakeup.projects.model.AppFeature
@@ -11,6 +14,7 @@ import com.elitec.appmakeup.projects.usecase.feature.GetFeatureUseCase
 import com.elitec.appmakeup.projects.usecase.feature.ListFeaturesUseCase
 import com.elitec.appmakeup.projects.usecase.feature.RemoveFeatureUseCase
 import com.elitec.appmakeup.projects.usecase.project.LoadProjectUseCase
+import com.elitec.appmakeup.projects.usecase.project.SaveProjectUseCase
 import com.elitec.appmakeup.projects.usecase.property.AddPropertyUseCase
 import com.elitec.appmakeup.projects.usecase.property.ListPropertiesUseCase
 import com.elitec.appmakeup.projects.usecase.property.RemovePropertyUseCase
@@ -20,6 +24,7 @@ import kotlinx.coroutines.flow.update
 
 class ProjectEditorViewModel(
     private val loadProjectUseCase: LoadProjectUseCase,
+    private val saveProjectUseCase: SaveProjectUseCase,
     private val listFeaturesUseCase: ListFeaturesUseCase,
     private val getFeatureUseCase: GetFeatureUseCase,
     private val listPropertiesUseCase: ListPropertiesUseCase,
@@ -28,9 +33,9 @@ class ProjectEditorViewModel(
     private val addPropertyUseCase: AddPropertyUseCase,
     private val removePropertyUseCase: RemovePropertyUseCase,
     private val generateCodeUseCase: GenerateCodeUseCase
-): ViewModel() {
-    private val _uiState = MutableStateFlow(ProjectEditorUiState(isLoading = true))
+) : ViewModel() {
 
+    private val _uiState = MutableStateFlow(ProjectEditorUiState(isLoading = true))
     val uiState: StateFlow<ProjectEditorUiState> = _uiState
 
     /* ---------------------------
@@ -57,17 +62,24 @@ class ProjectEditorViewModel(
 
         val updated = addFeatureUseCase.execute(
             project,
-            AppFeature(name = name, properties = emptyList())
+            AppFeature(
+                name = name,
+                properties = emptyList()
+            )
         )
 
-        refreshProject(updated)
+        persistAndRefresh(updated)
+        selectFeature(name)
     }
 
     fun removeFeature(name: String) {
         val project = currentProject() ?: return
 
         val updated = removeFeatureUseCase.execute(project, name)
-        refreshProject(updated)
+        persistAndRefresh(updated)
+
+        // si borraste la seleccionada, limpia selección
+        _uiState.update { it.copy(selectedFeature = null, properties = emptyList()) }
     }
 
     fun selectFeature(name: String) {
@@ -108,7 +120,8 @@ class ProjectEditorViewModel(
             )
         )
 
-        refreshProject(updated)
+        persistAndRefresh(updated)
+        selectFeature(featureName)
     }
 
     fun removeProperty(featureName: String, propertyName: String) {
@@ -120,28 +133,36 @@ class ProjectEditorViewModel(
             propertyName
         )
 
-        refreshProject(updated)
+        persistAndRefresh(updated)
+        selectFeature(featureName)
     }
 
     /* ---------------------------
-     * Code generation
+     * Code generation / Export
      * --------------------------- */
 
-    fun generateCode() {
+    fun exportProject() {
         val project = currentProject() ?: return
 
+        _uiState.update { it.copy(isExporting = true, error = null) }
+
         try {
-            generateCodeUseCase.execute(project)
+            generateCodeUseCase.execute(project, dryRun = false)
         } catch (e: Exception) {
-            _uiState.update {
-                it.copy(error = e.message)
-            }
+            _uiState.update { it.copy(error = e.message) }
+        } finally {
+            _uiState.update { it.copy(isExporting = false) }
         }
     }
 
     /* ---------------------------
      * Helpers
      * --------------------------- */
+
+    private fun persistAndRefresh(project: AppMakeupProject) {
+        saveProjectUseCase.execute(project)
+        refreshProject(project)
+    }
 
     private fun refreshProject(project: AppMakeupProject) {
         val features = listFeaturesUseCase.execute(project)
@@ -150,8 +171,6 @@ class ProjectEditorViewModel(
             it.copy(
                 project = project,
                 features = features,
-                selectedFeature = null,
-                properties = emptyList(),
                 isLoading = false,
                 error = null
             )

@@ -12,12 +12,12 @@ class FileProjectPersistence : ProjectPersistence {
     }
 
     override fun save(project: AppMakeupProject) {
-        val file = File(project.path, "appmakeup.json")
+        val file = File(project.path, "projectConfig.amk")
         file.writeText(json.encodeToString(AppMakeupProject.serializer(), project))
     }
 
     override fun load(path: String): AppMakeupProject {
-        val file = File(path, "appmakeup.json")
+        val file = File(path, "projectConfig.amk")
         return json.decodeFromString(
             AppMakeupProject.serializer(),
             file.readText()

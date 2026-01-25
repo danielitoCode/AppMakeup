@@ -10,7 +10,7 @@ class ProjectExporter(
     private val pipeline: GenerationPipeline
 ) {
 
-    fun export(project: AppMakeupProject) {
+    fun export(project: AppMakeupProject, dryRun: Boolean) {
 
         val packagePath = project.packageName.replace(".", "/")
 
@@ -26,7 +26,8 @@ class ProjectExporter(
                 GenerationContext(
                     architecture = DefaultArchitecture.value,
                     feature = coreFeature,
-                    outputPath = outputPath
+                    outputPath = outputPath,
+                    options = mapOf("dryRun" to dryRun)
                 )
             )
         }

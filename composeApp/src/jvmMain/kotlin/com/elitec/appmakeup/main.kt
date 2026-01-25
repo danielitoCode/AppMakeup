@@ -1,6 +1,7 @@
 package com.elitec.appmakeup
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,9 @@ import appmakeup.composeapp.generated.resources.sinfotow
 import appmakeup.composeapp.generated.resources.toolicon
 import com.elitec.appmakeup.di.initKoin
 import com.elitec.appmakeup.presentation.navigation.MainNavigationWrapper
+import com.elitec.appmakeup.presentation.theme.AppTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.context.startKoin
 
@@ -46,7 +52,7 @@ fun main() = application {
     LaunchedEffect(null) {
         initKoin()
     }
-
+    val scope = rememberCoroutineScope()
     Window(
         resizable = false,
         undecorated = true,
@@ -55,69 +61,76 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "AppMakeup",
     ) {
-        Scaffold(
-            topBar = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(5.dp),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        onClick = {
-                            windowState.isMinimized = true
-                        }
+        AppTheme {
+            Scaffold(
+                topBar = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Minimize,
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.background,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Surface(
-                        shape = RoundedCornerShape(5.dp),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        onClick = {
-                            if(windowState.placement == WindowPlacement.Maximized) {
-                                windowState.placement = WindowPlacement.Floating
-                                return@Surface
+                        Surface(
+                            shape = RoundedCornerShape(5.dp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            onClick = {
+                                windowState.isMinimized = true
                             }
-                            windowState.placement = WindowPlacement.Maximized
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Minimize,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.background,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Maximize,
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.background,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Surface(
-                        shape = RoundedCornerShape(5.dp),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        onClick = {
-                            exitApplication()
+
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            shape = RoundedCornerShape(5.dp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            onClick = {
+                                if(windowState.placement == WindowPlacement.Maximized) {
+                                    windowState.placement = WindowPlacement.Floating
+                                    return@Surface
+                                }
+                                windowState.placement = WindowPlacement.Maximized
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Maximize,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.background,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "",
-                            tint = MaterialTheme.colorScheme.background,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            shape = RoundedCornerShape(5.dp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            onClick = {
+                                exitApplication()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.background,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
-                }
-            },
-            bottomBar = {}
-        ) { innerPaddings ->
-            MainNavigationWrapper(
-                modifier = Modifier.fillMaxSize().padding(innerPaddings)
-            )
+                },
+                bottomBar = {
+                    Text(text = isSystemInDarkTheme().toString())
+                },
+            ) { innerPaddings ->
+                MainNavigationWrapper(
+                    onAppReady = {
+                        windowState.placement = WindowPlacement.Maximized
+                    },
+                    modifier = Modifier.fillMaxSize().padding(innerPaddings)
+                )
+            }
         }
     }
 }

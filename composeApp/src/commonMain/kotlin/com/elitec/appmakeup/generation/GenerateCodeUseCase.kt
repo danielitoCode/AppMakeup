@@ -6,7 +6,7 @@ class GenerateCodeUseCase(
     private val codeGenerator: CodeGenerator
 ) {
 
-    fun execute(project: AppMakeupProject) {
+    fun execute(project: AppMakeupProject, dryRun: Boolean) {
 
         require(project.features.isNotEmpty()) {
             "Project must have at least one feature to generate code"
@@ -17,6 +17,6 @@ class GenerateCodeUseCase(
             exportPath = project.exportPath
         )
 
-        codeGenerator.generate(intent)
+        codeGenerator.generate(intent, dryRun)
     }
 }

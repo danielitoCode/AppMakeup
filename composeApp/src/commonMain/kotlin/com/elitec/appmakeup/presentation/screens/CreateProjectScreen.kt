@@ -17,6 +17,7 @@ fun CreateProjectScreen(
     viewModel: CreateProjectViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var domain by remember { mutableStateOf("com.mycompany.") }
 
     if (state.isCreated) {
         onProjectCreate(state.path)
@@ -39,7 +40,7 @@ fun CreateProjectScreen(
 
         OutlinedTextField(
             value = state.packageName,
-            onValueChange = viewModel::onPackageChange,
+            onValueChange =  viewModel::onPackageChange,
             label = { Text("Package base") },
             modifier = Modifier.fillMaxWidth()
         )

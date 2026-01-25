@@ -128,7 +128,7 @@ val coreV4Module = module {
             planningStage = get(),
             generationStage = get(),
             writingStage = get(),
-            reportingStage = get()
+            reportingStage = DefaultReportingStage(ReportFormat.CLI)
         )
     }
 }

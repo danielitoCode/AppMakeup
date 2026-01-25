@@ -21,6 +21,7 @@ val presentationModule = module {
     viewModel {
         ProjectEditorViewModel(
             loadProjectUseCase = get(),
+            saveProjectUseCase = get(),
             listFeaturesUseCase = get(),
             getFeatureUseCase = get(),
             listPropertiesUseCase = get(),

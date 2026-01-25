@@ -8,12 +8,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.elitec.appmakeup.presentation.screens.CreateProjectScreen
+import com.elitec.appmakeup.presentation.screens.ExportScreen
 import com.elitec.appmakeup.presentation.screens.HomeScreen
 import com.elitec.appmakeup.presentation.screens.ProjectEditorScreen
 import com.elitec.appmakeup.presentation.screens.SplashScreen
+import com.elitec.appmakeup.presentation.theme.onBackgroundDark
 
 @Composable
 fun MainNavigationWrapper(
+    onAppReady: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -26,6 +29,7 @@ fun MainNavigationWrapper(
         composable<MainScreens.Splash> {
             SplashScreen(
                 navigateTo = { destination ->
+                    onAppReady()
                     navController.navigate(MainScreens.Home) {
                         popUpTo(MainScreens.Splash) { inclusive = true }
                     }
@@ -56,9 +60,19 @@ fun MainNavigationWrapper(
 
             ProjectEditorScreen(
                 projectPath = path,
-                onExport = {
+                onExportFinish = {
                     navController.navigate(MainScreens.Export(path))
+                },
+                onBack = {
+                    navController.navigate(MainScreens.Home)
                 }
+            )
+        }
+        composable<MainScreens.Export> { backStackEntry ->
+            val path = backStackEntry.toRoute<MainScreens.Export>().path
+            ExportScreen(
+                projectPath = path,
+                onDone = { navController.popBackStack() }
             )
         }
     }

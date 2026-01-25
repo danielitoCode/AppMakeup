@@ -6,7 +6,7 @@ class ProjectCodeGenerator(
     private val exporter: ProjectExporter
 ) : CodeGenerator {
 
-    override fun generate(intent: CodeGenerationIntent) {
-        exporter.export(intent.project)
+    override fun generate(intent: CodeGenerationIntent, dryRun: Boolean) {
+        exporter.export(intent.project, dryRun)
     }
 }
