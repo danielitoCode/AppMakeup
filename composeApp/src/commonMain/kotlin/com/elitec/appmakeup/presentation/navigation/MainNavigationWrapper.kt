@@ -60,11 +60,8 @@ fun MainNavigationWrapper(
 
             ProjectEditorScreen(
                 projectPath = path,
-                onExportFinish = {
+                onNavigateToExport = {
                     navController.navigate(MainScreens.Export(path))
-                },
-                onBack = {
-                    navController.navigate(MainScreens.Home)
                 }
             )
         }
@@ -72,7 +69,7 @@ fun MainNavigationWrapper(
             val path = backStackEntry.toRoute<MainScreens.Export>().path
             ExportScreen(
                 projectPath = path,
-                onDone = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
     }

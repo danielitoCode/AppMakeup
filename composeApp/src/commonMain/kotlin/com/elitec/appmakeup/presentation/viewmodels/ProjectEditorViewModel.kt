@@ -25,9 +25,6 @@ import kotlinx.coroutines.flow.update
 class ProjectEditorViewModel(
     private val loadProjectUseCase: LoadProjectUseCase,
     private val saveProjectUseCase: SaveProjectUseCase,
-    private val listFeaturesUseCase: ListFeaturesUseCase,
-    private val getFeatureUseCase: GetFeatureUseCase,
-    private val listPropertiesUseCase: ListPropertiesUseCase,
     private val addFeatureUseCase: AddFeatureUseCase,
     private val removeFeatureUseCase: RemoveFeatureUseCase,
     private val addPropertyUseCase: AddPropertyUseCase,
@@ -39,13 +36,13 @@ class ProjectEditorViewModel(
     val uiState: StateFlow<ProjectEditorUiState> = _uiState
 
     /* ---------------------------
-     * Project lifecycle
+     * Load
      * --------------------------- */
 
     fun loadProject(path: String) {
         try {
             val project = loadProjectUseCase.execute(path)
-            refreshProject(project)
+            refresh(project)
         } catch (e: Exception) {
             _uiState.update {
                 it.copy(isLoading = false, error = e.message)
@@ -54,129 +51,173 @@ class ProjectEditorViewModel(
     }
 
     /* ---------------------------
-     * Feature management
+     * Feature
      * --------------------------- */
 
     fun addFeature(name: String) {
         val project = currentProject() ?: return
 
-        val updated = addFeatureUseCase.execute(
-            project,
-            AppFeature(
-                name = name,
-                properties = emptyList()
+        if (project.features.any { it.name == name }) {
+            fail("Feature '$name' already exists")
+            return
+        }
+
+        val feature = AppFeature(
+            name = name,
+            properties = listOf(
+                AppProperty(
+                    name = "id",
+                    type = "String",
+                    isIdentifier = true
+                )
             )
         )
 
-        persistAndRefresh(updated)
-        selectFeature(name)
+        refresh(addFeatureUseCase.execute(project, feature))
     }
 
     fun removeFeature(name: String) {
         val project = currentProject() ?: return
 
-        val updated = removeFeatureUseCase.execute(project, name)
-        persistAndRefresh(updated)
+        if (project.features.size == 1) {
+            fail("Project must contain at least one feature")
+            return
+        }
 
-        // si borraste la seleccionada, limpia selección
-        _uiState.update { it.copy(selectedFeature = null, properties = emptyList()) }
+        refresh(removeFeatureUseCase.execute(project, name))
     }
 
     fun selectFeature(name: String) {
-        val project = currentProject() ?: return
-
-        val feature = getFeatureUseCase.execute(project, name)
-        val properties = feature?.let {
-            listPropertiesUseCase.execute(project, it.name)
-        }.orEmpty()
-
-        _uiState.update {
-            it.copy(
-                selectedFeature = feature,
-                properties = properties
-            )
-        }
+        val feature = currentProject()?.features?.find { it.name == name }
+        _uiState.update { it.copy(selectedFeature = feature) }
     }
 
     /* ---------------------------
-     * Property management
+     * Properties
      * --------------------------- */
 
     fun addProperty(
         featureName: String,
         propertyName: String,
         type: String,
-        isIdentifier: Boolean = false
+        isIdentifier: Boolean
     ) {
         val project = currentProject() ?: return
 
-        val updated = addPropertyUseCase.execute(
-            project,
-            featureName,
-            AppProperty(
-                name = propertyName,
-                type = type,
-                isIdentifier = isIdentifier
+        val feature = project.features.find { it.name == featureName } ?: return
+
+        if (isIdentifier && feature.properties.any { it.isIdentifier }) {
+            fail("Feature '$featureName' already has an identifier")
+            return
+        }
+
+        refresh(
+            addPropertyUseCase.execute(
+                project,
+                featureName,
+                AppProperty(propertyName, type, isIdentifier)
             )
         )
-
-        persistAndRefresh(updated)
-        selectFeature(featureName)
     }
 
     fun removeProperty(featureName: String, propertyName: String) {
         val project = currentProject() ?: return
+        val feature = project.features.find { it.name == featureName } ?: return
 
-        val updated = removePropertyUseCase.execute(
-            project,
-            featureName,
-            propertyName
-        )
+        val property = feature.properties.find { it.name == propertyName } ?: return
 
-        persistAndRefresh(updated)
-        selectFeature(featureName)
+        if (property.isIdentifier) {
+            fail("An identifier property cannot be removed")
+            return
+        }
+
+        refresh(removePropertyUseCase.execute(project, featureName, propertyName))
     }
 
     /* ---------------------------
-     * Code generation / Export
+     * Export
      * --------------------------- */
 
-    fun exportProject() {
+    fun export() {
         val project = currentProject() ?: return
 
-        _uiState.update { it.copy(isExporting = true, error = null) }
-
-        try {
-            generateCodeUseCase.execute(project, dryRun = false)
-        } catch (e: Exception) {
-            _uiState.update { it.copy(error = e.message) }
-        } finally {
-            _uiState.update { it.copy(isExporting = false) }
+        val errors = validateProject(project)
+        if (errors.isNotEmpty()) {
+            _uiState.update { it.copy(validationErrors = errors) }
+            return
         }
+
+        generateCodeUseCase.execute(project, true)
     }
 
     /* ---------------------------
      * Helpers
      * --------------------------- */
 
-    private fun persistAndRefresh(project: AppMakeupProject) {
-        saveProjectUseCase.execute(project)
-        refreshProject(project)
-    }
-
-    private fun refreshProject(project: AppMakeupProject) {
-        val features = listFeaturesUseCase.execute(project)
+    private fun refresh(project: AppMakeupProject) {
+        val errors = validateProject(project)
 
         _uiState.update {
             it.copy(
                 project = project,
-                features = features,
+                features = project.features,
+                selectedFeature = null,
+                validationErrors = errors,
+                canExport = errors.isEmpty(),
                 isLoading = false,
                 error = null
             )
         }
+
+        saveProjectUseCase.execute(project)
+    }
+
+    private fun fail(message: String) {
+        _uiState.update { it.copy(error = message) }
     }
 
     private fun currentProject(): AppMakeupProject? =
         _uiState.value.project
+
+    private fun validateProject(project: AppMakeupProject): List<String> {
+        val errors = mutableListOf<String>()
+
+        if (project.features.isEmpty()) {
+            errors += "Project must contain at least one feature"
+        }
+
+        project.features.forEach { feature ->
+            if (feature.properties.isEmpty()) {
+                errors += "Feature '${feature.name}' must have at least one property"
+            }
+
+            val identifiers = feature.properties.count { it.isIdentifier }
+            if (identifiers != 1) {
+                errors += "Feature '${feature.name}' must have exactly one identifier property"
+            }
+        }
+
+        return errors
+    }
+
+    private fun validateFeature(feature: AppFeature): String? {
+
+        val identifiers =
+            feature.properties.count { it.isIdentifier }
+
+        if (identifiers != 1) {
+            return "Feature '${feature.name}' must have exactly one identifier"
+        }
+
+        feature.repository?.let {
+            if (!it.isValid()) {
+                return "Repository for '${feature.name}' must support at least one operation"
+            }
+        }
+
+        return null
+    }
+
+    fun canExport(): Boolean =
+        _uiState.value.features.all { validateFeature(it) == null }
 }

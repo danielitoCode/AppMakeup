@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppFeature(
     val name: String,
-    val properties: List<AppProperty>
+    val properties: List<AppProperty>,
+    val repository: RepositoryConfig? = null
 )

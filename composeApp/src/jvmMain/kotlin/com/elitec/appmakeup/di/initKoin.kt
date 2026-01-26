@@ -6,7 +6,6 @@ fun initKoin() {
     startKoin {
         modules(
             infrastructureModule,
-            validationModule,
             coreV4Module,
             applicationModule,
             presentationModule

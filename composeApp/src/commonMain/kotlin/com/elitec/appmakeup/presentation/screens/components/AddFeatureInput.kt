@@ -15,24 +15,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AddFeatureInput(
-    onAddFeature: (String) -> Unit
-) {
+fun AddFeatureInput(onAddFeature: (String) -> Unit) {
     var name by remember { mutableStateOf("") }
 
     Row {
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("New feature") }
+            label = { Text("New feature") },
+            modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))
-        Button(onClick = {
-            if (name.isNotBlank()) {
-                onAddFeature(name)
-                name = ""
+        Button(
+            onClick = {
+                if (name.isNotBlank()) {
+                    onAddFeature(name)
+                    name = ""
+                }
             }
-        }) {
+        ) {
             Text("Add")
         }
     }

@@ -11,19 +11,19 @@ import org.koin.dsl.module
 
 val infrastructureModule = module {
 
-    // Persistencia de proyecto
     single<ProjectPersistence> {
         FileProjectPersistence()
     }
 
-    // Recientes
     single<RecentProjectsRepository> {
         FileRecentProjectsRepository()
     }
 
-    // Export / generación
     single {
-        ProjectExporter(get())
+        ProjectExporter(
+            pipeline = get(),
+            previewPipeline = get()
+        )
     }
 
     single<CodeGenerator> {

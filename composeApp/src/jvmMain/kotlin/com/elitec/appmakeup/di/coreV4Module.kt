@@ -16,6 +16,7 @@ import com.elitec.appmakeup.core.v4.pipeline.FileSystemWritingStage
 import com.elitec.appmakeup.core.v4.pipeline.GenerationPipeline
 import com.elitec.appmakeup.core.v4.pipeline.GenerationStage
 import com.elitec.appmakeup.core.v4.pipeline.PlanningStage
+import com.elitec.appmakeup.core.v4.pipeline.PreviewWritingStage
 import com.elitec.appmakeup.core.v4.pipeline.ReportFormat
 import com.elitec.appmakeup.core.v4.pipeline.ReportingStage
 import com.elitec.appmakeup.core.v4.pipeline.ValidationStage
@@ -29,20 +30,20 @@ import org.koin.dsl.module
 
 val coreV4Module = module {
 
-    /* -------------------------
- * GENERATORS (CONCRETOS)
- * ------------------------- */
+    /* =========================================================
+     * GENERATORS
+     * ========================================================= */
 
     single { FeatureSkeletonGenerator() }
     single { DomainEntityGenerator() }
-    single { RepositoryGenerator( contracts = get()) }
-    single { UseCaseGenerator( contracts = get()) }
-    single { RepositoryImplGenerator( contracts = get()) }
-    single { MapperGenerator( contracts = get()) }
+    single { RepositoryGenerator(contracts = get()) }
+    single { UseCaseGenerator(contracts = get()) }
+    single { RepositoryImplGenerator(contracts = get()) }
+    single { MapperGenerator(contracts = get()) }
 
-    /* -------------------------
+    /* =========================================================
      * VALIDATION
-     * ------------------------- */
+     * ========================================================= */
 
     single { EntityValidator() }
     single { FeatureValidator(get()) }
@@ -55,11 +56,10 @@ val coreV4Module = module {
         )
     }
 
-    /* -------------------------
+    /* =========================================================
      * PLANNING
-     * ------------------------- */
+     * ========================================================= */
 
-    // Para MVP: listas explícitas (aunque estén vacías)
     single<List<RepositoryContract>> { emptyList() }
     single<List<MapperContract>> { emptyList() }
 
@@ -70,9 +70,9 @@ val coreV4Module = module {
         )
     }
 
-    /* -------------------------
+    /* =========================================================
      * GENERATION
-     * ------------------------- */
+     * ========================================================= */
 
     single<GenerationStage> {
         DefaultGenerationStage(
@@ -89,46 +89,64 @@ val coreV4Module = module {
                     get<MapperGenerator>()
                 )
             ),
-            presentationGenerator = null, // Core V5
-            repositoryGenerator = null,   // ya incluido arriba
-            mapperGenerator = null        // ya incluido arriba
+            presentationGenerator = null,
+            repositoryGenerator = null,
+            mapperGenerator = null
         )
     }
 
-    /* -------------------------
-     * WRITING
-     * ------------------------- */
+    /* =========================================================
+     * WRITING (REAL)
+     * ========================================================= */
 
     single<WritingStage> {
         FileSystemWritingStage(
             options = WritingOptions(
-                dryRun = true,
+                dryRun = false,
                 overwrite = true
             )
         )
     }
 
-    /* -------------------------
-     * REPORTING
-     * ------------------------- */
+    /* =========================================================
+     * WRITING (PREVIEW)
+     * ========================================================= */
 
-    single<ReportingStage> {
-        DefaultReportingStage(
-            format = ReportFormat.CLI
-        )
+    single<PreviewWritingStage> {
+        PreviewWritingStage()
     }
 
-    /* -------------------------
-     * PIPELINE (CLAVE)
-     * ------------------------- */
+    /* =========================================================
+     * REPORTING
+     * ========================================================= */
 
-    single {
+    single<ReportingStage> {
+        DefaultReportingStage(ReportFormat.CLI)
+    }
+
+    /* =========================================================
+     * PIPELINES
+     * ========================================================= */
+
+    // Pipeline REAL
+    single<GenerationPipeline> {
         GenerationPipeline(
             validationStage = get(),
             planningStage = get(),
             generationStage = get(),
-            writingStage = get(),
-            reportingStage = DefaultReportingStage(ReportFormat.CLI)
+            writingStage = get<WritingStage>(),
+            reportingStage = get()
+        )
+    }
+
+    // Pipeline PREVIEW
+    single<GenerationPipeline> {
+        GenerationPipeline(
+            validationStage = get(),
+            planningStage = get(),
+            generationStage = get(),
+            writingStage = get<PreviewWritingStage>(),
+            reportingStage = get()
         )
     }
 }

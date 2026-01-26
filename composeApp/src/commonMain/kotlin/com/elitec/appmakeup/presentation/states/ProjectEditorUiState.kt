@@ -9,8 +9,8 @@ data class ProjectEditorUiState(
     val project: AppMakeupProject? = null,
     val features: List<AppFeature> = emptyList(),
     val selectedFeature: AppFeature? = null,
-    val properties: List<AppProperty> = emptyList(),
+    val validationErrors: List<String> = emptyList(),
     val isLoading: Boolean = false,
-    val isExporting: Boolean = false, // ✅ NUEVO
+    val canExport: Boolean = false,
     val error: String? = null
 )

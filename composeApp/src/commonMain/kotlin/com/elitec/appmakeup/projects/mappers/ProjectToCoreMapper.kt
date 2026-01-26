@@ -12,7 +12,7 @@ class ProjectToCoreMapper {
     fun mapFeature(feature: AppFeature): CoreFeature {
 
         val entity = CoreEntity(
-            name = feature.name,
+            name = feature.name.replaceFirstChar { it.uppercase() },
             properties = feature.properties.map {
                 CoreProperty(
                     name = it.name,

@@ -28,23 +28,28 @@ fun AddPropertyInput(
             onValueChange = { name = it },
             label = { Text("Property name") }
         )
+
         OutlinedTextField(
             value = type,
             onValueChange = { type = it },
             label = { Text("Type") }
         )
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = isId, onCheckedChange = { isId = it })
             Text("Identifier")
         }
-        Button(onClick = {
-            if (name.isNotBlank()) {
-                onAddProperty(featureName, name, type, isId)
-                name = ""
-                isId = false
+
+        Button(
+            onClick = {
+                if (name.isNotBlank()) {
+                    onAddProperty(featureName, name, type, isId)
+                    name = ""
+                    isId = false
+                }
             }
-        }) {
-            Text("Add Property")
+        ) {
+            Text("Add property")
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.elitec.appmakeup.di
 
 import com.elitec.appmakeup.generation.GenerateCodeUseCase
+import com.elitec.appmakeup.generation.PreviewGenerationPlanUseCase
 import com.elitec.appmakeup.projects.usecase.feature.AddFeatureUseCase
 import com.elitec.appmakeup.projects.usecase.feature.GetFeatureUseCase
 import com.elitec.appmakeup.projects.usecase.feature.ListFeaturesUseCase
@@ -37,4 +38,5 @@ val applicationModule = module {
 
     // Generation
     factory { GenerateCodeUseCase(get()) }
+    factory { PreviewGenerationPlanUseCase(get()) }
 }
