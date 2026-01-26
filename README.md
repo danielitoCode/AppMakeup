@@ -1,188 +1,204 @@
-# AppMakeup — Core V2
-
----
+# AppMakeup — Core V4 (Closed)
 
 ## 🚀 What is AppMakeup?
 
-**AppMakeup** is a desktop application built with **Kotlin Multiplatform** and **Compose Desktop** whose goal is to **visually model application architecture and generate deterministic project structures** following Clean Architecture principles.
+**AppMakeup** is a desktop application built with **Kotlin Multiplatform** and **Compose Desktop** that allows you to **model application architecture visually** and **generate deterministic project structures and code** following Clean Architecture principles.
 
-AppMakeup is intentionally **not** an AI tool, nor a "smart" code generator.
+AppMakeup is **not an AI tool**.
 
 It does **not**:
-- guess business logic
-- generate application behavior
-- run or compile generated apps
+- infer business logic
+- guess architecture decisions
+- generate behavior automatically
 
-Instead, AppMakeup focuses on **architecture as a first-class concept**.
+Instead, AppMakeup is a **deterministic architecture compiler**.
 
-> You design the architecture explicitly. AppMakeup materializes it safely.
-
----
-
-## 🎯 Why AppMakeup exists
-
-In real projects, most long-term problems come from:
-
-- unclear architecture decisions
-- inconsistent project structures
-- premature coupling between layers
-- uncontrolled growth of modules
-
-AppMakeup exists to solve those problems **before code is written**.
-
-It allows developers to:
-- model architecture visually
-- enforce structure without loss of control
-- evolve projects without rewrites
-- keep Clean Architecture explicit and verifiable
+> You declare architecture. AppMakeup materializes it safely.
 
 ---
 
-## 🧠 Core philosophy
-
-AppMakeup is built around these principles:
+## 🧠 Core Philosophy (Unchanged)
 
 - Architecture first, code second
 - Structure before implementation
 - Predictability over magic
 - Deterministic generation
-- Strict separation of layers
+- Explicit contracts and layers
 - No filesystem access from UI
 - No domain logic in presentation
-- Explicit, atomic use cases
+- Atomic, testable use cases
 
 ---
 
-## ✅ Current State — **Core V2 (Stable)**
+## ✅ Current State — **Core V4 (Closed & Stable)**
 
-AppMakeup is currently in **Core V2**, which is considered **stable and closed**.
+Core V4 is now **feature-complete and closed**.
 
-**Core V2 is about structure, not code.**
+It represents the **first full generation-capable core**, where AppMakeup moves from *structure modeling* to **real, validated code generation** while preserving strict architectural guarantees.
 
-This core establishes a solid foundation that future versions build upon without breaking.
+Core V4 builds on Core V2 and Core V3 concepts but introduces a **generation pipeline**, **planning stage**, and **dry-run previews**.
 
 ---
 
-## ✨ What Core V2 Includes
+## ✨ What Core V4 Includes
 
-### 🧭 Project lifecycle
+### 🧭 Project Lifecycle
 
 - Create new projects
-  - application name
-  - package name
-  - workspace location
 - Open existing projects
-- Persist recent projects on disk
-- Normalize and deduplicate paths
-- Remove invalid projects automatically
-
-### 🔍 Project validation
-
-Before opening a project, AppMakeup validates:
-
-- directory existence
-- AppMakeup project structure
-- presence of `project.amk.json`
-- JSON integrity
-- project version compatibility
-
-All validation errors are **explicit and user-friendly**.
+- Persist and validate projects on disk
+- Versioned project format
+- Recent projects registry
 
 ---
 
-## 🧩 Architecture Modeling
+### 🧩 Architecture Modeling
 
-Inside a project, Core V2 supports:
+- Features
+- Domain entities
+- Entity properties
+- Identifier enforcement
+- Layer selection per feature
+- Validation before generation
 
-- Feature definition
-- Domain entity modeling
-- Entity property modeling
-- Dirty-state tracking
-- Model validation before generation
-- Deterministic structure generation
-
-All modeling happens at the **domain level**, never at the code level.
+Invalid states are **prevented at editor level**.
 
 ---
 
-## 🏗️ Project Architecture (Internal)
+### 🧪 Generation Pipeline (Core V4)
 
-AppMakeup follows **Clean Architecture**, adapted for a modeling-first tool.
+Core V4 introduces a **5-stage deterministic pipeline**:
 
-### Main layers
+1. **ValidationStage**
+   - Entity rules
+   - Feature rules
+   - Architecture constraints
+
+2. **PlanningStage**
+   - Decides what layers will be generated
+   - Domain / Data / Repositories / Mappers
+   - Fully testable and previewable
+
+3. **GenerationStage**
+   - Layer generators
+   - Templates
+   - No filesystem access
+
+4. **WritingStage**
+   - Real filesystem writer
+   - Dry-run writer (preview mode)
+
+5. **ReportingStage**
+   - CLI / Table / JSON output
+
+---
+
+### 🧪 Dry-Run Mode
+
+Core V4 supports **true dry-run execution**:
+
+- No files are written
+- Generated artifacts are collected
+- Output paths are simulated
+- Safe to run repeatedly
+
+Used for:
+- UI preview
+- Tests
+- Validation before export
+
+---
+
+### 🧩 Generation Plan Preview (UI)
+
+Before exporting, users can see:
+
+- Which layers will be generated
+- Whether repositories/mappers apply
+- Why a layer is skipped
+- Validation errors per feature
+
+This makes generation **explainable**, not magical.
+
+---
+
+### 🧾 Files Preview (Dry-Run Visual)
+
+The UI shows:
+- Exact files that would be generated
+- Relative paths
+- Per-feature grouping
+
+Nothing is written unless explicitly exported.
+
+---
+
+### 🏗️ Internal Architecture (Clean Architecture)
 
 **Domain**
-- modeling entities
-- validation rules
-- use cases
+- Core models
+- Validators
+- Generation pipeline
+- Planning logic
 
-**Data**
-- repositories
-- JSON persistence
-- filesystem access (Okio)
+**Application**
+- Use cases
+- Intent orchestration
 
-**Templates & Generation**
-- project templates
-- structure generators
-- filesystem writers
+**Infrastructure**
+- Filesystem
+- Exporters
+- Pipelines wiring (Koin)
 
 **Presentation**
 - Compose Desktop UI
 - ViewModels
-- UI state management
-
-**Infrastructure**
-- dependency injection (Koin)
-- settings persistence
-- application configuration
+- UI state only
 
 ---
 
 ## 🧪 Testing & Quality
 
-Core V2 has strong test coverage:
+Core V4 is heavily tested:
 
-- Domain logic is fully unit tested
-- Structure generation is deterministic and testable
-- Filesystem operations are tested using fake filesystems
-- Tests validate **structure**, not code
+- Pipeline unit tests
+- Dry-run generation tests
+- Failure-path tests
+- Deterministic artifact assertions
 
-Code style consistency is enforced using **ktlint**.
-
----
-
-## 🚫 What Core V2 Intentionally Does NOT Do
-
-To keep the core clean and extensible, Core V2 does **not**:
-
-- generate Kotlin/Java code
-- create ViewModels or Screens automatically
-- run or compile generated projects
-- perform automatic migrations
-- provide undo/redo
-- act as an IDE replacement
-
-These are **deliberate design decisions**.
+Generation is **100% testable without filesystem**.
 
 ---
 
-## 🗺️ Roadmap
+## 🚫 What Core V4 Does NOT Do
 
-### 🔜 Core V3 — Code Generation
+By design, Core V4 does **not**:
 
-- Code generation layer
-- Android Clean Architecture generator
-- `.kt` file generation
-- Separation between structure and code
-- Pluggable code generators
+- generate UI screens
+- generate ViewModels
+- guess repository contracts
+- auto-migrate projects
+- act as an IDE
+- include undo/redo (yet)
 
-### 🔮 Core V4 — Advanced Modeling
+---
 
-- Undo / Redo (Memento pattern)
+## 🔮 What Comes Next — **Core V5 (Planned)**
+
+Core V5 will focus on **advanced modeling and extensibility**:
+
+### Planned features
+
+- RepositoryContract editor (visual CRUD modeling)
+- Explicit Mapper contracts
+- Multi-platform generators (Android / KMP / Backend)
 - Plugin system
-- Multi-platform generators
-- Advanced templates
-- Migration tooling
+- Template customization
+- Undo / Redo (Memento pattern)
+- Project migrations
+- Export profiles
+
+Core V5 will **not break Core V4 projects**.
 
 ---
 
@@ -194,25 +210,16 @@ These are **deliberate design decisions**.
 ./gradlew :composeApp:run
 ```
 
-### Windows installer (MSI)
-
-```bash
-./gradlew packageMsi
-```
-
 ---
 
-## 🤝 For contributors & forks
+## 🤝 Final Notes
 
-This repository represents a **stable Core V2**.
+Core V4 marks a **major milestone**:
 
-You can safely:
+- Architecture is explicit
+- Generation is deterministic
+- Previews are safe
+- Errors are explainable
 
-- build new code generators
-- add project migrations
-- extend templates
-- improve UI/UX
-- target new platforms
-
-> Core V2 is designed to grow — not to be rewritten.
-
+> AppMakeup is no longer a generator.  
+> It is an **architecture compiler**.
