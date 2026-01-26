@@ -102,17 +102,10 @@ class ExportViewModel(
     fun runPreview() {
         val project = _uiState.value.project ?: return
 
-        val result = generateCodeUseCase.execute(
-            project = project,
-            dryRun = true
-        )
+        val files = generateCodeUseCase.preview(project)
 
-        if (result is GenerationResult.Preview) {
-            _uiPreviewState.update {
-                it.copy(
-                    previewFiles = result.files
-                )
-            }
+        _uiPreviewState.update {
+            it.copy(previewFiles = files)
         }
     }
 }

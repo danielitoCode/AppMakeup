@@ -14,4 +14,9 @@ class ProjectCodeGenerator(
         println("$tag Init executing Generation in platform with \ndryRun: $dryRun")
         return exporter.export(intent.project, dryRun)
     }
+
+    override fun preview(project: AppMakeupProject): List<String> {
+        println("$tag Preview Generation in platform ")
+        return exporter.preview(project)
+    }
 }

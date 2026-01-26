@@ -6,4 +6,5 @@ import com.elitec.appmakeup.projects.model.AppMakeupProject
 interface CodeGenerator {
 
     fun generate(intent: CodeGenerationIntent,dryRun: Boolean): GenerationResult
+    fun preview(project: AppMakeupProject): List<String>
 }

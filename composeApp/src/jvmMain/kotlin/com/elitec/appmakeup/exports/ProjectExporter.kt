@@ -93,4 +93,31 @@ class ProjectExporter(
 
         return lastResult
     }
+
+    fun preview(project: AppMakeupProject): List<String> {
+        val allFiles = mutableListOf<String>()
+
+        val packagePath = project.packageName.replace(".", "/")
+        val outputPath =
+            "${project.path}/export/composeApp/src/androidMain/kotlin/$packagePath"
+
+        project.features.forEach { feature ->
+            val coreFeature = ProjectToCoreMapper().mapFeature(feature)
+
+            val result = previewPipeline.run(
+                GenerationContext(
+                    architecture = DefaultArchitecture.value,
+                    feature = coreFeature,
+                    outputPath = outputPath,
+                    options = mapOf("dryRun" to true)
+                )
+            )
+
+            if (result is GenerationResult.Preview) {
+                allFiles += result.files
+            }
+        }
+
+        return allFiles
+    }
 }

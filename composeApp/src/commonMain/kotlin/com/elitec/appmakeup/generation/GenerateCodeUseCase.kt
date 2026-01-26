@@ -24,4 +24,8 @@ class GenerateCodeUseCase(
         println("$tag make generation intent: $intent")
         return codeGenerator.generate(intent, dryRun)
     }
+
+    fun preview(project: AppMakeupProject): List<String> {
+        return codeGenerator.preview(project)
+    }
 }
