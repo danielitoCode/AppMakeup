@@ -1,9 +1,9 @@
 package com.elitec.appmakeup.exports
 
 import com.elitec.appmakeup.core.architecture.DefaultArchitecture
-import com.elitec.appmakeup.core.v4.contracts.GenerationContext
 import com.elitec.appmakeup.core.v4.contracts.GenerationResult
-import com.elitec.appmakeup.core.v4.pipeline.GenerationPipeline
+import com.elitec.appmakeup.core.v5.domain.contracts.GenerationContext
+import com.elitec.appmakeup.core.v5.pipeline.GenerationPipeline
 import com.elitec.appmakeup.logs.Logger
 import com.elitec.appmakeup.projects.mappers.ProjectToCoreMapper
 import com.elitec.appmakeup.projects.model.AppMakeupProject

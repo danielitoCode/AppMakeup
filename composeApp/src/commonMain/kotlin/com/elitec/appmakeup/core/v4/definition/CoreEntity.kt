@@ -1,5 +1,8 @@
 package com.elitec.appmakeup.core.v4.definition
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CoreEntity(
     val name: String,
     val properties: List<CoreProperty>

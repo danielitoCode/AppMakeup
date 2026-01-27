@@ -1,7 +1,7 @@
 package com.elitec.appmakeup.core.v4.validation
 
-import com.elitec.appmakeup.core.v4.definition.CoreFeature
 import com.elitec.appmakeup.core.v4.definition.CoreLayer
+import com.elitec.appmakeup.core.v5.definitions.CoreFeature
 
 class FeatureValidator(
     private val entityValidator: EntityValidator = EntityValidator()

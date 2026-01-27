@@ -209,11 +209,6 @@ class ProjectEditorViewModel(
             return "Feature '${feature.name}' must have exactly one identifier"
         }
 
-        feature.repository?.let {
-            if (!it.isValid()) {
-                return "Repository for '${feature.name}' must support at least one operation"
-            }
-        }
 
         return null
     }

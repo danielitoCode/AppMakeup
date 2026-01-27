@@ -1,8 +1,8 @@
 package com.elitec.appmakeup.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.elitec.appmakeup.core.v4.contracts.GenerationContext
 import com.elitec.appmakeup.core.v4.contracts.GenerationResult
+import com.elitec.appmakeup.core.v5.domain.contracts.GenerationContext
 import com.elitec.appmakeup.generation.GenerateCodeUseCase
 import com.elitec.appmakeup.generation.PreviewGenerationPlanUseCase
 import com.elitec.appmakeup.presentation.states.ExportUiState

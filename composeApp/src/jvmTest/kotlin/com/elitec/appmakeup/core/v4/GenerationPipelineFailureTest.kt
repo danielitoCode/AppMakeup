@@ -1,24 +1,20 @@
 package com.elitec.appmakeup.core.v4
 
 import com.elitec.appmakeup.core.architecture.DefaultArchitecture
-import com.elitec.appmakeup.core.v4.contracts.GenerationContext
 import com.elitec.appmakeup.core.v4.contracts.GenerationResult
-import com.elitec.appmakeup.core.v4.definition.CoreFeature
 import com.elitec.appmakeup.core.v4.definition.CoreLayer
-import com.elitec.appmakeup.core.v4.generators.domain.DomainEntityGenerator
-import com.elitec.appmakeup.core.v4.pipeline.DefaultGenerationStage
-import com.elitec.appmakeup.core.v4.pipeline.DefaultPlanningStage
+import com.elitec.appmakeup.core.v5.generators.domain.DomainEntityGenerator
+import com.elitec.appmakeup.core.v5.pipeline.DefaultGenerationStage
 import com.elitec.appmakeup.core.v4.pipeline.DefaultReportingStage
-import com.elitec.appmakeup.core.v4.pipeline.FileSystemWritingStage
-import com.elitec.appmakeup.core.v4.pipeline.GenerationPipeline
+import com.elitec.appmakeup.core.v5.pipeline.FileSystemWritingStage
+import com.elitec.appmakeup.core.v5.pipeline.GenerationPipeline
 import com.elitec.appmakeup.core.v4.pipeline.ReportFormat
 import com.elitec.appmakeup.core.v4.pipeline.WritingOptions
-import com.elitec.appmakeup.core.v4.validation.ArchitectureValidator
-import com.elitec.appmakeup.core.v4.validation.DefaultValidationStage
+import com.elitec.appmakeup.core.v5.validation.ArchitectureValidator
+import com.elitec.appmakeup.core.v5.validation.DefaultValidationStage
 import com.elitec.appmakeup.core.v4.validation.FeatureValidator
 import java.nio.file.Files
 import kotlin.test.Test
-import kotlin.test.assertContains
 import kotlin.test.assertTrue
 
 class GenerationPipelineFailureTest {
