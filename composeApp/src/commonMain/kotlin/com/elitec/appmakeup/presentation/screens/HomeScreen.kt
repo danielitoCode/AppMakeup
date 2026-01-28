@@ -1,6 +1,8 @@
 package com.elitec.appmakeup.presentation.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,9 +28,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elitec.appmakeup.presentation.viewmodels.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("EffectKeys")
 @Composable
 fun HomeScreen(
+    sharedTransitionScope: SharedTransitionScope,
     onProjectCreate: () -> Unit,
     onOpenProject: (String) -> Unit,
     modifier: Modifier = Modifier,

@@ -7,6 +7,7 @@ fun initKoin() {
         modules(
             infrastructureModule,
             coreV4Module,
+            coreV5Module,
             applicationModule,
             presentationModule
         )

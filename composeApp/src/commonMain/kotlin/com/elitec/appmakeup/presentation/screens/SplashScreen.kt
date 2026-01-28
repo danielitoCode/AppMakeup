@@ -1,5 +1,7 @@
 package com.elitec.appmakeup.presentation.screens
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +17,10 @@ import com.elitec.appmakeup.presentation.navigation.MainScreens
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SplashScreen(
+    sharedTransitionScope: SharedTransitionScope,
     navigateTo: (MainScreens) -> Unit,
     modifier: Modifier = Modifier
 ) {

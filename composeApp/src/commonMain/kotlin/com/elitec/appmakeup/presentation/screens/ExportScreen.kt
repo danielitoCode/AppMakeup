@@ -38,7 +38,6 @@ fun ExportScreen(
     viewModel: ExportViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val previewState by viewModel.uiPreviewState.collectAsStateWithLifecycle()
 
     LaunchedEffect(projectPath) {
         viewModel.loadProject(projectPath)
@@ -61,12 +60,28 @@ fun ExportScreen(
         )
 
         state.project?.let { project ->
-            Text("Project: ${project.name}")
-            Text("Package: ${project.packageName}")
-            Text("Features: ${project.features.size}")
+            state.previews.forEach { preview ->
+
+                Text("Feature: ${preview.featureName}",
+                    style = MaterialTheme.typography.titleMedium)
+
+                Text("Plan:")
+                Text("• Domain: ${preview.plan.generateDomain}")
+                Text("• Data: ${preview.plan.generateData}")
+                Text("• Repositories: ${preview.plan.generateRepositories}")
+                Text("• Mappers: ${preview.plan.generateMappers}")
+
+                Spacer(Modifier.height(8.dp))
+
+                Text("Files:")
+                preview.files.forEach {
+                    Text("• $it", style = MaterialTheme.typography.bodySmall)
+                }
+
+                Divider()
+            }
         }
 
-        Divider()
 
         /* ---------------------------
          * Options
@@ -92,22 +107,12 @@ fun ExportScreen(
             style = MaterialTheme.typography.titleMedium
         )
 
-        GenerationPlanPreview(previewState)
-
         Divider()
 
         /* ---------------------------
          * Preview: Files (dry-run)
          * --------------------------- */
 
-        if (previewState.previewFiles.isNotEmpty()) {
-            Text(
-                text = "Files preview",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            PreviewFilesList(previewState.previewFiles)
-        }
 
         Spacer(Modifier.height(8.dp))
 
@@ -134,10 +139,6 @@ fun ExportScreen(
 
         if (state.isRunning) {
             CircularProgressIndicator()
-        }
-
-        state.result?.let {
-            Text(it, color = MaterialTheme.colorScheme.primary)
         }
 
         state.error?.let {

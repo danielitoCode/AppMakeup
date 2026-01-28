@@ -49,6 +49,8 @@ kotlin {
             implementation(libs.filesystem.okio)
             // Cache
             implementation(libs.multiplatform.cache)
+            // Animations
+            implementation(libs.animation.sequence)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

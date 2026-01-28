@@ -37,7 +37,7 @@ val presentationModule = module {
         ExportViewModel(
             loadProjectUseCase = get(),
             generateCodeUseCase = get(),
-            previewGenerationPlanUseCase = get()
+            previewGenerationUseCase = get()
         )
     }
 }

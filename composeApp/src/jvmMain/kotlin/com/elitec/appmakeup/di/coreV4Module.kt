@@ -26,6 +26,8 @@ import com.elitec.appmakeup.core.v4.validation.EntityValidator
 import com.elitec.appmakeup.core.v4.validation.FeatureValidator
 import com.elitec.appmakeup.core.v5.pipeline.DefaultPlanningStage
 import com.elitec.appmakeup.core.v5.pipeline.PlanningStage
+import com.elitec.appmakeup.core.v5.preview.PreviewGenerationPipeline
+import com.elitec.appmakeup.projects.usecase.preview.PreviewGenerationUseCase
 import org.koin.dsl.module
 
 val coreV4Module = module {
@@ -145,5 +147,19 @@ val coreV4Module = module {
             writingStage = get<PreviewWritingStage>(),
             reportingStage = get()
         )
+    }
+}
+
+val coreV5Module = module {
+    single {
+        PreviewGenerationPipeline(
+            validationStage = get(),
+            planningStage = get(),
+            generationStage = get()
+        )
+    }
+
+    factory {
+        PreviewGenerationUseCase(get())
     }
 }

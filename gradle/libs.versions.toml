@@ -18,6 +18,8 @@ composeNavigation = "2.9.1"
 okio = "3.16.2"
 # Cache
 cache4K = "0.14.0"
+# Animations
+sequence = "2.0.0-kotlin2.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -47,6 +49,8 @@ filesystem-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 filesystem-okio-test = { module="com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 # Cache
 multiplatform-cache = { module = "io.github.reactivecircus.cache4k:cache4k", version.ref = "cache4K"}
+# Animation
+animation-sequence = { module = "io.github.pauloaapereira:animatedsequence", version.ref = "sequence" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
