@@ -11,9 +11,6 @@ class AddRepositoryContractUseCase {
         contract: EditableRepositoryContract
     ): AppMakeupProject {
 
-        require(!contract.isEmpty()) {
-            "Repository contract must support at least one operation"
-        }
 
         return project.copy(
             features = project.features.map { feature ->

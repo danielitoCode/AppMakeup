@@ -16,7 +16,7 @@ class RemoveRepositoryContractUseCase {
                 else feature.copy(
                     repositoryContracts =
                         feature.repositoryContracts
-                            .filterNot { it.entity.name == entityName }
+                            .filterNot { it.entityName == entityName }
                 )
             }
         )

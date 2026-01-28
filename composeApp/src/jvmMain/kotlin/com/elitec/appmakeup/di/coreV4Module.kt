@@ -64,8 +64,7 @@ val coreV4Module = module {
     single<List<MapperContract>> { emptyList() }
 
     single<PlanningStage> {
-        DefaultPlanningStage(
-        )
+        DefaultPlanningStage(get())
     }
 
     /* =========================================================
