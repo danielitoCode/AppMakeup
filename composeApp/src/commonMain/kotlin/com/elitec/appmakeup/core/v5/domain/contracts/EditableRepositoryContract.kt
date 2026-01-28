@@ -5,16 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EditableRepositoryContract(
-    val entity: CoreEntity,
-
+    val entityName: String,
     val supportsCreate: Boolean = false,
-    val supportsRead: Boolean = true,
+    val supportsRead: Boolean = false,
     val supportsUpdate: Boolean = false,
     val supportsDelete: Boolean = false
 ) {
-    fun isEmpty(): Boolean =
-        !supportsCreate &&
-                !supportsRead &&
-                !supportsUpdate &&
-                !supportsDelete
+    fun isValid(): Boolean =
+        supportsCreate || supportsRead || supportsUpdate || supportsDelete
 }
