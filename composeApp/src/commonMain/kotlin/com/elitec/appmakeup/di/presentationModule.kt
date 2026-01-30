@@ -27,9 +27,9 @@ val presentationModule = module {
             saveProjectUseCase = get(),
             addFeatureUseCase = get(),
             removeFeatureUseCase = get(),
-            addPropertyUseCase = get(),
-            removePropertyUseCase = get(),
-            generateCodeUseCase = get()
+            generateCodeUseCase = get(),
+            addEntityPropertyUseCase = get(),
+            deleteEntityPropertyUseCase = get()
         )
     }
 

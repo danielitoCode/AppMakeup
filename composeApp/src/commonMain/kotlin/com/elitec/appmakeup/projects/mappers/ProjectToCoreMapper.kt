@@ -11,20 +11,22 @@ class ProjectToCoreMapper {
 
     fun mapFeature(feature: AppFeature): CoreFeature {
 
-        val entity = CoreEntity(
-            name = feature.name.replaceFirstChar { it.uppercase() },
-            properties = feature.properties.map {
-                CoreProperty(
-                    name = it.name,
-                    type = it.type,
-                    isIdentifier = it.isIdentifier
-                )
-            }
-        )
+        val coreEntities = feature.entities.map { entity ->
+            CoreEntity(
+                name = entity.name,
+                properties = entity.properties.map { prop ->
+                    CoreProperty(
+                        name = prop.name,
+                        type = prop.type,
+                        isIdentifier = prop.isIdentifier
+                    )
+                }
+            )
+        }
 
         return CoreFeature(
             name = feature.name.lowercase(),
-            entities = listOf(entity),
+            entities = coreEntities,
             layers = setOf(
                 CoreLayer.DOMAIN,
                 CoreLayer.DATA

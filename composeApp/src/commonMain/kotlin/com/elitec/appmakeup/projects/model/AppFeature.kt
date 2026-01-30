@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppFeature(
     val name: String,
-    val properties: List<AppProperty>,
+    val entities: List<AppEntity> = emptyList(),
+    val relations: List<AppRelation> = emptyList(),
     val repositoryContracts: List<EditableRepositoryContract> = emptyList()
 )

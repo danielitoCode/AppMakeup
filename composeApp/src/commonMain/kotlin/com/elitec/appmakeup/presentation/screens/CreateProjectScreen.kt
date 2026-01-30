@@ -53,7 +53,7 @@ fun CreateProjectScreen(
             trailingIcon = {
                 Button(
                     onClick = {
-                        pickDirectory()?.let { viewModel.onPathChange(it) }
+                        // pickDirectory()?.let { viewModel.onPathChange(it) }
                     }
                 ) {
                     Text("Elegir")

@@ -16,10 +16,15 @@ kotlinSerialization = "1.9.0"
 composeNavigation = "2.9.1"
 # FileSystem
 okio = "3.16.2"
+filekit = "0.12.0"
 # Cache
 cache4K = "0.14.0"
 # Animations
 sequence = "2.0.0-kotlin2.1"
+# Highlights
+highlights = "1.1.0"
+# Toast
+sonner = "0.3.9"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -47,10 +52,17 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 # FileSystem
 filesystem-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 filesystem-okio-test = { module="com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 # Cache
 multiplatform-cache = { module = "io.github.reactivecircus.cache4k:cache4k", version.ref = "cache4K"}
 # Animation
 animation-sequence = { module = "io.github.pauloaapereira:animatedsequence", version.ref = "sequence" }
+# Highlights
+syntax-highlights = { module = "dev.snipme:highlights", version.ref = "highlights" }
+# Toast
+multiplatform-toast = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }

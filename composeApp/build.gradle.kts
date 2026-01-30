@@ -47,10 +47,18 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             // FileSystem
             implementation(libs.filesystem.okio)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
             // Cache
             implementation(libs.multiplatform.cache)
             // Animations
             implementation(libs.animation.sequence)
+            // HighLight
+            implementation(libs.syntax.highlights)
+            // Toast
+            implementation(libs.multiplatform.toast)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -6,11 +6,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EditableRepositoryContract(
     val entityName: String,
-    val supportsCreate: Boolean = false,
-    val supportsRead: Boolean = false,
-    val supportsUpdate: Boolean = false,
-    val supportsDelete: Boolean = false
+    val supportsCreate: Boolean = true,
+    val supportsRead: Boolean = true,
+    val supportsUpdate: Boolean = true,
+    val supportsDelete: Boolean = true
 ) {
+
     fun isValid(): Boolean =
         supportsCreate || supportsRead || supportsUpdate || supportsDelete
 }

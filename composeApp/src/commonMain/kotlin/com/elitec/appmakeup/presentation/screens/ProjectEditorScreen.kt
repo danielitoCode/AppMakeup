@@ -12,8 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.elitec.appmakeup.presentation.screens.components.EditorContent
 import com.elitec.appmakeup.presentation.screens.components.ErrorView
+import com.elitec.appmakeup.presentation.screens.components.ProjectEditorContent
 import com.elitec.appmakeup.presentation.viewmodels.ProjectEditorViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -25,7 +25,9 @@ fun ProjectEditorScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Cargar proyecto una sola vez
+    /* ----------------------------------------------------
+     * Load project once
+     * ---------------------------------------------------- */
     LaunchedEffect(projectPath) {
         viewModel.loadProject(projectPath)
     }
@@ -52,21 +54,35 @@ fun ProjectEditorScreen(
             }
         }
 
-        else -> {
-            EditorContent(
+        state.project != null -> {
+            ProjectEditorContent(
                 state = state,
                 onSelectFeature = viewModel::selectFeature,
                 onAddFeature = viewModel::addFeature,
                 onRemoveFeature = viewModel::removeFeature,
-                onAddProperty = viewModel::addProperty,
-                onRemoveProperty = viewModel::removeProperty,
-                onExport = {
-                    viewModel.export()
+                onAddProperty = { feature, entity, property ->
+                    viewModel.addEntityProperty(feature, entity, property)
+                },
+                onRemoveProperty = { feature, entity, property ->
+                    viewModel.removeEntityProperty(feature, entity, property)
+                },
+                onExport = { dryRun ->
+                    viewModel.export(dryRun)
                     if (state.canExport) {
                         onNavigateToExport()
                     }
                 }
             )
+        }
+
+        else -> {
+            // Estado imposible, pero seguro
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No project loaded")
+            }
         }
     }
 }
