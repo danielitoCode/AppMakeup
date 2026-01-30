@@ -7,7 +7,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elitec.appmakeup.presentation.util.pickDirectory
+import com.elitec.appmakeup.presentation.util.selectFolder
 import com.elitec.appmakeup.presentation.viewmodels.CreateProjectViewModel
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -16,6 +21,8 @@ fun CreateProjectScreen(
     modifier: Modifier = Modifier,
     viewModel: CreateProjectViewModel = koinViewModel()
 ) {
+
+    val scope = rememberCoroutineScope()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var domain by remember { mutableStateOf("com.mycompany.") }
 
@@ -53,6 +60,9 @@ fun CreateProjectScreen(
             trailingIcon = {
                 Button(
                     onClick = {
+                        scope.launch {
+                            selectFolder()?.let { viewModel.onPathChange(it) }
+                        }
                         // pickDirectory()?.let { viewModel.onPathChange(it) }
                     }
                 ) {

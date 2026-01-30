@@ -39,15 +39,24 @@ import appmakeup.composeapp.generated.resources.toolicon
 import com.elitec.appmakeup.di.initKoin
 import com.elitec.appmakeup.presentation.navigation.MainNavigationWrapper
 import com.elitec.appmakeup.presentation.theme.AppTheme
+import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.context.startKoin
+import java.io.File
 
 fun main() = application {
     val windowState = WindowState(
         position = WindowPosition(alignment = Alignment.Center),
         placement = WindowPlacement.Floating
+    )
+    // Initialize FileKit
+    val appDir = File(System.getProperty("user.home"), ".myapp")
+    FileKit.init(
+        appId = "MyApplication",
+        filesDir = File(appDir, "data"),
+        cacheDir = File(appDir, "cache")
     )
     LaunchedEffect(null) {
         initKoin()
