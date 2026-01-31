@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -75,7 +77,11 @@ fun ProjectEditorContent(
         VerticalDivider()
 
         // 🔹 Panel 3: Entity editor + repository
-        Box(Modifier.weight(0.5f).padding(16.dp)) {
+        Box(
+            modifier = Modifier
+                .weight(0.5f)
+                .padding(16.dp)
+        ) {
 
             val feature = state.selectedFeature
             val entity = state.selectedEntity
@@ -86,7 +92,15 @@ fun ProjectEditorContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                val scrollState = rememberScrollState()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
 
                     EntityEditorPanel(
                         feature = feature,
@@ -108,14 +122,15 @@ fun ProjectEditorContent(
 
                     Divider()
 
-                    // 🔹 NUEVO – HITO 5
                     RelationEditorPanel(
                         feature = feature,
                         onAddRelation = { from, to, type ->
-                            // esto lo conectas al ViewModel
                             // viewModel.addRelation(...)
                         }
                     )
+
+                    // 🔹 Espacio final para que no quede pegado al borde
+                    Spacer(Modifier.height(24.dp))
                 }
             }
         }
