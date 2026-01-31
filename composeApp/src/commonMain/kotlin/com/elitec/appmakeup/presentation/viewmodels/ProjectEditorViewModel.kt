@@ -1,9 +1,6 @@
 package com.elitec.appmakeup.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.elitec.appmakeup.core.v4.definition.CoreEntity
-import com.elitec.appmakeup.core.v4.definition.CoreLayer
-import com.elitec.appmakeup.core.v4.definition.CoreProperty
 import com.elitec.appmakeup.core.v5.domain.contracts.EditableRepositoryContract
 import com.elitec.appmakeup.generation.GenerateCodeUseCase
 import com.elitec.appmakeup.presentation.states.ProjectEditorUiState
@@ -11,15 +8,16 @@ import com.elitec.appmakeup.projects.model.AppEntity
 import com.elitec.appmakeup.projects.model.AppFeature
 import com.elitec.appmakeup.projects.model.AppMakeupProject
 import com.elitec.appmakeup.projects.model.AppProperty
+import com.elitec.appmakeup.projects.model.AppRelation
 import com.elitec.appmakeup.projects.model.RelationType
 import com.elitec.appmakeup.projects.usecase.entity.AddEntityPropertyUseCase
 import com.elitec.appmakeup.projects.usecase.entity.DeleteEntityPropertyUseCase
 import com.elitec.appmakeup.projects.usecase.feature.AddFeatureUseCase
-import com.elitec.appmakeup.projects.usecase.feature.GetFeatureUseCase
-import com.elitec.appmakeup.projects.usecase.feature.ListFeaturesUseCase
 import com.elitec.appmakeup.projects.usecase.feature.RemoveFeatureUseCase
 import com.elitec.appmakeup.projects.usecase.project.LoadProjectUseCase
 import com.elitec.appmakeup.projects.usecase.project.SaveProjectUseCase
+import com.elitec.appmakeup.projects.usecase.relation.AddRelationUseCase
+import com.elitec.appmakeup.projects.usecase.relation.RemoveRelationUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -31,7 +29,9 @@ class ProjectEditorViewModel(
     private val addEntityPropertyUseCase: AddEntityPropertyUseCase,
     private val deleteEntityPropertyUseCase: DeleteEntityPropertyUseCase,
     private val removeFeatureUseCase: RemoveFeatureUseCase,
-    private val generateCodeUseCase: GenerateCodeUseCase
+    private val generateCodeUseCase: GenerateCodeUseCase,
+    private val addRelationUseCase: AddRelationUseCase,
+    private val removeRelationUseCase: RemoveRelationUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -218,34 +218,80 @@ class ProjectEditorViewModel(
     private fun validateProject(project: AppMakeupProject): List<String> {
         val errors = mutableListOf<String>()
 
+        /* ---------------------------
+         * Project level
+         * --------------------------- */
+
         if (project.features.isEmpty()) {
             errors += "Project must contain at least one feature"
             return errors
         }
 
+        /* ---------------------------
+         * Feature level
+         * --------------------------- */
+
         project.features.forEach { feature ->
 
             if (feature.entities.isEmpty()) {
                 errors += "Feature '${feature.name}' must contain at least one entity"
+                return@forEach
             }
 
             val entityNames = feature.entities.map { it.name }.toSet()
 
+            /* ---------------------------
+             * Entity level
+             * --------------------------- */
+
             feature.entities.forEach { entity ->
+
                 if (entity.properties.isEmpty()) {
-                    errors += "Entity '${entity.name}' must have at least one property"
+                    errors +=
+                        "Entity '${entity.name}' in feature '${feature.name}' must have at least one property"
                 }
 
-                val ids = entity.properties.count { it.isIdentifier }
-                if (ids != 1) {
-                    errors += "Entity '${entity.name}' must have exactly one identifier"
+                val identifiers = entity.properties.count { it.isIdentifier }
+                if (identifiers != 1) {
+                    errors +=
+                        "Entity '${entity.name}' in feature '${feature.name}' must have exactly one identifier"
                 }
             }
 
+            /* ---------------------------
+             * Relations
+             * --------------------------- */
+
+            feature.relations.forEach { relation ->
+
+                if (relation.fromEntity !in entityNames) {
+                    errors +=
+                        "Relation fromEntity '${relation.fromEntity}' does not exist in feature '${feature.name}'"
+                }
+
+                if (relation.toEntity !in entityNames) {
+                    errors +=
+                        "Relation toEntity '${relation.toEntity}' does not exist in feature '${feature.name}'"
+                }
+
+                if (
+                    relation.fromEntity == relation.toEntity &&
+                    relation.type == RelationType.MANY_TO_MANY
+                ) {
+                    errors +=
+                        "Many-to-many relation cannot be self-referencing (${relation.fromEntity})"
+                }
+            }
+
+            /* ---------------------------
+             * Repository contracts
+             * --------------------------- */
+
             feature.repositoryContracts.forEach { contract ->
+
                 if (contract.entityName !in entityNames) {
                     errors +=
-                        "RepositoryContract entity '${contract.entityName}' does not exist"
+                        "RepositoryContract entity '${contract.entityName}' does not exist in feature '${feature.name}'"
                 }
 
                 if (!contract.isValid()) {
@@ -292,6 +338,44 @@ class ProjectEditorViewModel(
         _uiState.update {
             it.copy(selectedEntity = entity)
         }
+    }
+
+    fun addRelation(
+        featureName: String,
+        fromEntity: String,
+        toEntity: String,
+        type: RelationType
+    ) {
+        val project = currentProject() ?: return
+
+        val relation = AppRelation(
+            fromEntity = fromEntity,
+            toEntity = toEntity,
+            type = type
+        )
+
+        val updated = addRelationUseCase.execute(
+            project,
+            featureName,
+            relation
+        )
+
+        refresh(updated)
+    }
+
+    fun removeRelation(
+        featureName: String,
+        relation: AppRelation
+    ) {
+        val project = currentProject() ?: return
+
+        val updated = removeRelationUseCase.execute(
+            project,
+            featureName,
+            relation
+        )
+
+        refresh(updated)
     }
 
     private fun currentProject(): AppMakeupProject? =

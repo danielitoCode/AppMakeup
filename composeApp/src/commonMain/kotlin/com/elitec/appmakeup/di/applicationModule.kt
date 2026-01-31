@@ -14,6 +14,8 @@ import com.elitec.appmakeup.projects.usecase.project.ListRecentProjectsUseCase
 import com.elitec.appmakeup.projects.usecase.project.LoadProjectUseCase
 import com.elitec.appmakeup.projects.usecase.project.SaveProjectUseCase
 import com.elitec.appmakeup.projects.usecase.property.ListEntityPropertiesUseCase
+import com.elitec.appmakeup.projects.usecase.relation.AddRelationUseCase
+import com.elitec.appmakeup.projects.usecase.relation.RemoveRelationUseCase
 import org.koin.dsl.module
 
 val applicationModule = module {
@@ -46,4 +48,8 @@ val applicationModule = module {
     factory { GenerateCodeUseCase(get()) }
     // ✅ Core V5 – Preview del plan
     factory { PreviewGenerationPlanUseCase(get())}
+
+    // Relations
+    factory { AddRelationUseCase(get()) }
+    factory { RemoveRelationUseCase(get()) }
 }

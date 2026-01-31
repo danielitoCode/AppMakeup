@@ -105,6 +105,17 @@ fun ProjectEditorContent(
                             onUpdateRepositoryContract(feature.name, it)
                         }
                     )
+
+                    Divider()
+
+                    // 🔹 NUEVO – HITO 5
+                    RelationEditorPanel(
+                        feature = feature,
+                        onAddRelation = { from, to, type ->
+                            // esto lo conectas al ViewModel
+                            // viewModel.addRelation(...)
+                        }
+                    )
                 }
             }
         }
