@@ -39,7 +39,7 @@ fun ProjectEditorScreen(
         state.error != null -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = state.error!!,
+                    text = state.error ?: "Unknown error",
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -55,6 +55,8 @@ fun ProjectEditorScreen(
                 onAddProperty = viewModel::addEntityProperty,
                 onRemoveProperty = viewModel::removeEntityProperty,
                 onUpdateRepositoryContract = viewModel::updateRepositoryContract,
+                onAddRelation = viewModel::addRelation,
+                onDeleteRelation = viewModel::removeRelation,
                 onExport = {
                     if (state.canExport) {
                         viewModel.export(dryRun = true)

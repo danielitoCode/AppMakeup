@@ -342,17 +342,9 @@ class ProjectEditorViewModel(
 
     fun addRelation(
         featureName: String,
-        fromEntity: String,
-        toEntity: String,
-        type: RelationType
+        relation: AppRelation
     ) {
         val project = currentProject() ?: return
-
-        val relation = AppRelation(
-            fromEntity = fromEntity,
-            toEntity = toEntity,
-            type = type
-        )
 
         val updated = addRelationUseCase.execute(
             project,
@@ -361,6 +353,13 @@ class ProjectEditorViewModel(
         )
 
         refresh(updated)
+
+        println(
+            "[VM] Relations in feature '$featureName': " +
+                    updated.features
+                        .first { it.name == featureName }
+                        .relations
+        )
     }
 
     fun removeRelation(

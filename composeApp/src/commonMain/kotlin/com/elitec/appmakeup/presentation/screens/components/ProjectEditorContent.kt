@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.elitec.appmakeup.core.v5.domain.contracts.EditableRepositoryContract
 import com.elitec.appmakeup.presentation.states.ProjectEditorUiState
 import com.elitec.appmakeup.projects.model.AppProperty
+import com.elitec.appmakeup.projects.model.AppRelation
+import com.elitec.appmakeup.projects.model.RelationType
 
 @Composable
 fun ProjectEditorContent(
@@ -50,11 +52,12 @@ fun ProjectEditorContent(
     onAddProperty: (String, String, AppProperty) -> Unit,
     onRemoveProperty: (String, String, String) -> Unit,
     onUpdateRepositoryContract: (String, EditableRepositoryContract) -> Unit,
+    onAddRelation: (String, AppRelation) -> Unit,
+    onDeleteRelation: (String, AppRelation) -> Unit,
     onExport: () -> Unit
 ) {
     Row(Modifier.fillMaxSize()) {
 
-        // 🔹 Panel 1: Features
         FeatureListPanel(
             features = state.features,
             selectedFeature = state.selectedFeature,
@@ -65,7 +68,6 @@ fun ProjectEditorContent(
 
         VerticalDivider()
 
-        // 🔹 Panel 2: Entities
         EntityListPanel(
             feature = state.selectedFeature,
             selectedEntity = state.selectedEntity,
@@ -76,13 +78,13 @@ fun ProjectEditorContent(
 
         VerticalDivider()
 
-        // 🔹 Panel 3: Entity editor + repository
+        // 👉 PANEL DERECHO CON SCROLL
         Box(
-            modifier = Modifier
+            Modifier
                 .weight(0.5f)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-
             val feature = state.selectedFeature
             val entity = state.selectedEntity
 
@@ -92,15 +94,7 @@ fun ProjectEditorContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
-
-                val scrollState = rememberScrollState()
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
                     EntityEditorPanel(
                         feature = feature,
@@ -124,13 +118,13 @@ fun ProjectEditorContent(
 
                     RelationEditorPanel(
                         feature = feature,
-                        onAddRelation = { from, to, type ->
-                            // viewModel.addRelation(...)
+                        onAddRelation = { relation ->
+                            onAddRelation(feature.name, relation)
+                        },
+                        onDeleteRelation = { rel ->
+                            onDeleteRelation(feature.name, rel)
                         }
                     )
-
-                    // 🔹 Espacio final para que no quede pegado al borde
-                    Spacer(Modifier.height(24.dp))
                 }
             }
         }
@@ -140,15 +134,13 @@ fun ProjectEditorContent(
         ValidationPanel(state.validationErrors)
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(Modifier.fillMaxSize()) {
         Button(
             onClick = onExport,
+            enabled = state.canExport,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp),
-            enabled = state.canExport
+                .padding(24.dp)
         ) {
             Icon(Icons.Default.PlayArrow, contentDescription = "Export")
         }
