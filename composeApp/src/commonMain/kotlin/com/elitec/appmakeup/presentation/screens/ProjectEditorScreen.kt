@@ -25,28 +25,19 @@ fun ProjectEditorScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    /* ----------------------------------------------------
-     * Load project once
-     * ---------------------------------------------------- */
     LaunchedEffect(projectPath) {
         viewModel.loadProject(projectPath)
     }
 
     when {
         state.isLoading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
 
         state.error != null -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = state.error ?: "Unknown error",
                     color = MaterialTheme.colorScheme.error
@@ -54,35 +45,14 @@ fun ProjectEditorScreen(
             }
         }
 
-        state.project != null -> {
+        else -> {
             ProjectEditorContent(
                 state = state,
                 onSelectFeature = viewModel::selectFeature,
                 onAddFeature = viewModel::addFeature,
-                onRemoveFeature = viewModel::removeFeature,
-                onAddProperty = { feature, entity, property ->
-                    viewModel.addEntityProperty(feature, entity, property)
-                },
-                onRemoveProperty = { feature, entity, property ->
-                    viewModel.removeEntityProperty(feature, entity, property)
-                },
-                onExport = { dryRun ->
-                    viewModel.export(dryRun)
-                    if (state.canExport) {
-                        onNavigateToExport()
-                    }
-                }
+                onAddEntity = viewModel::addEntity,
+                onExport = onNavigateToExport
             )
-        }
-
-        else -> {
-            // Estado imposible, pero seguro
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No project loaded")
-            }
         }
     }
 }
