@@ -1,5 +1,7 @@
 package com.elitec.appmakeup.presentation.screens.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,17 +12,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FloatingActionButtonElevation
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Modifier.Companion
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.elitec.appmakeup.core.v5.domain.contracts.EditableRepositoryContract
 import com.elitec.appmakeup.presentation.states.ProjectEditorUiState
 import com.elitec.appmakeup.projects.model.AppProperty
 
@@ -30,40 +44,87 @@ fun ProjectEditorContent(
     onSelectFeature: (String) -> Unit,
     onAddFeature: (String) -> Unit,
     onAddEntity: (String, String) -> Unit,
+    onSelectEntity: (String) -> Unit,
+    onAddProperty: (String, String, AppProperty) -> Unit,
+    onRemoveProperty: (String, String, String) -> Unit,
+    onUpdateRepositoryContract: (String, EditableRepositoryContract) -> Unit,
     onExport: () -> Unit
 ) {
     Row(Modifier.fillMaxSize()) {
 
-        // 🔹 Left panel – Features
+        // 🔹 Panel 1: Features
         FeatureListPanel(
             features = state.features,
             selectedFeature = state.selectedFeature,
             onSelectFeature = onSelectFeature,
             onAddFeature = onAddFeature,
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.25f)
         )
 
-        Divider(Modifier.fillMaxHeight().width(1.dp))
+        VerticalDivider()
 
-        // 🔹 Middle panel – Entities
+        // 🔹 Panel 2: Entities
         EntityListPanel(
             feature = state.selectedFeature,
+            selectedEntity = state.selectedEntity,
+            onSelectEntity = onSelectEntity,
             onAddEntity = onAddEntity,
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.25f)
         )
 
-        Divider(Modifier.fillMaxHeight().width(1.dp))
+        VerticalDivider()
 
-        // 🔹 Right panel – Context (vacío por ahora)
-        Box(
-            modifier = Modifier.weight(0.4f).padding(16.dp),
-            contentAlignment = Alignment.Center
+        // 🔹 Panel 3: Entity editor + repository
+        Box(Modifier.weight(0.5f).padding(16.dp)) {
+
+            val feature = state.selectedFeature
+            val entity = state.selectedEntity
+
+            if (feature == null || entity == null) {
+                Text(
+                    "Select an entity to edit",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                    EntityEditorPanel(
+                        feature = feature,
+                        entity = entity,
+                        onAddProperty = onAddProperty,
+                        onRemoveProperty = onRemoveProperty
+                    )
+
+                    Divider()
+
+                    RepositoryContractPanel(
+                        entity = entity,
+                        contract = feature.repositoryContracts
+                            .firstOrNull { it.entityName == entity.name },
+                        onUpdate = {
+                            onUpdateRepositoryContract(feature.name, it)
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    if (state.validationErrors.isNotEmpty()) {
+        ValidationPanel(state.validationErrors)
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Button(
+            onClick = onExport,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp),
+            enabled = state.canExport
         ) {
-            Text(
-                text = "Select an entity to edit",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Icon(Icons.Default.PlayArrow, contentDescription = "Export")
         }
     }
 }

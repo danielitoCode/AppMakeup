@@ -39,7 +39,7 @@ fun ProjectEditorScreen(
         state.error != null -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = state.error ?: "Unknown error",
+                    text = state.error!!,
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -51,7 +51,16 @@ fun ProjectEditorScreen(
                 onSelectFeature = viewModel::selectFeature,
                 onAddFeature = viewModel::addFeature,
                 onAddEntity = viewModel::addEntity,
-                onExport = onNavigateToExport
+                onSelectEntity = viewModel::selectEntity,
+                onAddProperty = viewModel::addEntityProperty,
+                onRemoveProperty = viewModel::removeEntityProperty,
+                onUpdateRepositoryContract = viewModel::updateRepositoryContract,
+                onExport = {
+                    if (state.canExport) {
+                        viewModel.export(dryRun = true)
+                        onNavigateToExport()
+                    }
+                }
             )
         }
     }

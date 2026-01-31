@@ -285,6 +285,15 @@ class ProjectEditorViewModel(
         }
     }
 
+    fun selectEntity(entityName: String) {
+        val feature = _uiState.value.selectedFeature ?: return
+        val entity = feature.entities.find { it.name == entityName }
+
+        _uiState.update {
+            it.copy(selectedEntity = entity)
+        }
+    }
+
     private fun currentProject(): AppMakeupProject? =
         _uiState.value.project
 }
