@@ -1,46 +1,34 @@
-package com.elitec.appmakeup.presentation.screens.components
+package com.elitec.appmakeup.presentation.screens.components.editor
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Modifier.Companion
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.elitec.appmakeup.core.v5.domain.contracts.EditableRepositoryContract
+import com.elitec.appmakeup.presentation.screens.components.EntityEditorPanel
+import com.elitec.appmakeup.presentation.screens.components.EntityListPanel
+import com.elitec.appmakeup.presentation.screens.components.RelationEditorPanel
+import com.elitec.appmakeup.presentation.screens.components.RepositoryContractPanel
+import com.elitec.appmakeup.presentation.screens.components.ValidationPanel
 import com.elitec.appmakeup.presentation.states.ProjectEditorUiState
 import com.elitec.appmakeup.projects.model.AppProperty
 import com.elitec.appmakeup.projects.model.AppRelation
-import com.elitec.appmakeup.projects.model.RelationType
 
 @Composable
 fun ProjectEditorContent(
@@ -131,7 +119,7 @@ fun ProjectEditorContent(
     }
 
     if (state.validationErrors.isNotEmpty()) {
-        ValidationPanel(state.validationErrors)
+        ValidationPanel(state.validationIssues)
     }
 
     Box(Modifier.fillMaxSize()) {

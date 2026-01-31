@@ -1,4 +1,4 @@
-package com.elitec.appmakeup.presentation.screens.components
+package com.elitec.appmakeup.presentation.screens.components.editor
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

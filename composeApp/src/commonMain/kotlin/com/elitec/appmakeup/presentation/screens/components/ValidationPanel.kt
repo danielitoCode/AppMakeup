@@ -9,23 +9,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.elitec.appmakeup.projects.validations.ValidationIssue
 
 @Composable
-fun ValidationPanel(errors: List<String>) {
+fun ValidationPanel(issues: List<ValidationIssue>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.errorContainer)
-            .padding(16.dp)
+            .padding(12.dp)
     ) {
-        Text(
-            "Validation errors",
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.titleSmall
-        )
-
-        errors.forEach {
-            Text("• $it", color = MaterialTheme.colorScheme.error)
+        issues.forEach {
+            Text(
+                "• ${it.message}",
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

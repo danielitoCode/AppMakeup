@@ -9,7 +9,6 @@ import com.elitec.appmakeup.projects.model.AppFeature
 import com.elitec.appmakeup.projects.model.AppMakeupProject
 import com.elitec.appmakeup.projects.model.AppProperty
 import com.elitec.appmakeup.projects.model.AppRelation
-import com.elitec.appmakeup.projects.model.RelationType
 import com.elitec.appmakeup.projects.usecase.entity.AddEntityPropertyUseCase
 import com.elitec.appmakeup.projects.usecase.entity.DeleteEntityPropertyUseCase
 import com.elitec.appmakeup.projects.usecase.feature.AddFeatureUseCase
@@ -18,6 +17,9 @@ import com.elitec.appmakeup.projects.usecase.project.LoadProjectUseCase
 import com.elitec.appmakeup.projects.usecase.project.SaveProjectUseCase
 import com.elitec.appmakeup.projects.usecase.relation.AddRelationUseCase
 import com.elitec.appmakeup.projects.usecase.relation.RemoveRelationUseCase
+import com.elitec.appmakeup.projects.validations.ValidationIssue
+import com.elitec.appmakeup.projects.validations.ValidationLevel
+import com.elitec.appmakeup.projects.validations.ValidationScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -200,10 +202,10 @@ class ProjectEditorViewModel(
     fun export(dryRun: Boolean) {
         val project = currentProject() ?: return
 
-        val errors = validateProject(project)
-        if (errors.isNotEmpty()) {
+        val issues = validateProject(project)
+        if (issues.isNotEmpty()) {
             _uiState.update {
-                it.copy(validationErrors = errors)
+                it.copy(validationIssues = issues)
             }
             return
         }
@@ -215,93 +217,79 @@ class ProjectEditorViewModel(
      * Validation
      * ---------------------------------------------------- */
 
-    private fun validateProject(project: AppMakeupProject): List<String> {
-        val errors = mutableListOf<String>()
-
-        /* ---------------------------
-         * Project level
-         * --------------------------- */
+    private fun validateProject(project: AppMakeupProject): List<ValidationIssue> {
+        val issues = mutableListOf<ValidationIssue>()
 
         if (project.features.isEmpty()) {
-            errors += "Project must contain at least one feature"
-            return errors
+            issues += ValidationIssue(
+                level = ValidationLevel.ERROR,
+                scope = ValidationScope.PROJECT,
+                message = "Project must contain at least one feature"
+            )
+            return issues
         }
-
-        /* ---------------------------
-         * Feature level
-         * --------------------------- */
 
         project.features.forEach { feature ->
 
             if (feature.entities.isEmpty()) {
-                errors += "Feature '${feature.name}' must contain at least one entity"
-                return@forEach
+                issues += ValidationIssue(
+                    level = ValidationLevel.ERROR,
+                    scope = ValidationScope.FEATURE,
+                    feature = feature.name,
+                    message = "Feature '${feature.name}' must contain at least one entity"
+                )
             }
 
             val entityNames = feature.entities.map { it.name }.toSet()
 
-            /* ---------------------------
-             * Entity level
-             * --------------------------- */
-
             feature.entities.forEach { entity ->
 
                 if (entity.properties.isEmpty()) {
-                    errors +=
-                        "Entity '${entity.name}' in feature '${feature.name}' must have at least one property"
+                    issues += ValidationIssue(
+                        level = ValidationLevel.ERROR,
+                        scope = ValidationScope.ENTITY,
+                        feature = feature.name,
+                        entity = entity.name,
+                        message = "Entity '${entity.name}' must have at least one property"
+                    )
                 }
 
-                val identifiers = entity.properties.count { it.isIdentifier }
-                if (identifiers != 1) {
-                    errors +=
-                        "Entity '${entity.name}' in feature '${feature.name}' must have exactly one identifier"
-                }
-            }
-
-            /* ---------------------------
-             * Relations
-             * --------------------------- */
-
-            feature.relations.forEach { relation ->
-
-                if (relation.fromEntity !in entityNames) {
-                    errors +=
-                        "Relation fromEntity '${relation.fromEntity}' does not exist in feature '${feature.name}'"
-                }
-
-                if (relation.toEntity !in entityNames) {
-                    errors +=
-                        "Relation toEntity '${relation.toEntity}' does not exist in feature '${feature.name}'"
-                }
-
-                if (
-                    relation.fromEntity == relation.toEntity &&
-                    relation.type == RelationType.MANY_TO_MANY
-                ) {
-                    errors +=
-                        "Many-to-many relation cannot be self-referencing (${relation.fromEntity})"
+                val ids = entity.properties.count { it.isIdentifier }
+                if (ids != 1) {
+                    issues += ValidationIssue(
+                        level = ValidationLevel.ERROR,
+                        scope = ValidationScope.ENTITY,
+                        feature = feature.name,
+                        entity = entity.name,
+                        message = "Entity '${entity.name}' must have exactly one identifier"
+                    )
                 }
             }
-
-            /* ---------------------------
-             * Repository contracts
-             * --------------------------- */
 
             feature.repositoryContracts.forEach { contract ->
-
                 if (contract.entityName !in entityNames) {
-                    errors +=
-                        "RepositoryContract entity '${contract.entityName}' does not exist in feature '${feature.name}'"
+                    issues += ValidationIssue(
+                        level = ValidationLevel.ERROR,
+                        scope = ValidationScope.REPOSITORY,
+                        feature = feature.name,
+                        entity = contract.entityName,
+                        message = "RepositoryContract entity '${contract.entityName}' does not exist"
+                    )
                 }
 
                 if (!contract.isValid()) {
-                    errors +=
-                        "RepositoryContract for '${contract.entityName}' must support at least one operation"
+                    issues += ValidationIssue(
+                        level = ValidationLevel.ERROR,
+                        scope = ValidationScope.REPOSITORY,
+                        feature = feature.name,
+                        entity = contract.entityName,
+                        message = "RepositoryContract must support at least one operation"
+                    )
                 }
             }
         }
 
-        return errors
+        return issues
     }
 
     /* ----------------------------------------------------
@@ -309,14 +297,14 @@ class ProjectEditorViewModel(
      * ---------------------------------------------------- */
 
     private fun refresh(project: AppMakeupProject) {
-        val errors = validateProject(project)
+        val issues = validateProject(project)
 
         _uiState.update {
             it.copy(
                 project = project,
                 features = project.features,
-                validationErrors = errors,
-                canExport = errors.isEmpty(),
+                validationIssues = issues,
+                canExport = issues.none { it.level == ValidationLevel.ERROR },
                 isLoading = false,
                 error = null
             )
