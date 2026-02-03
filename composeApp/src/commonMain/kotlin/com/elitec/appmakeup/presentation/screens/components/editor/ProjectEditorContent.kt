@@ -42,9 +42,10 @@ fun ProjectEditorContent(
     onUpdateRepositoryContract: (String, EditableRepositoryContract) -> Unit,
     onAddRelation: (String, AppRelation) -> Unit,
     onDeleteRelation: (String, AppRelation) -> Unit,
-    onExport: () -> Unit
+    onExport: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(Modifier.fillMaxSize()) {
+    Row(modifier.fillMaxSize()) {
 
         FeatureListPanel(
             features = state.features,

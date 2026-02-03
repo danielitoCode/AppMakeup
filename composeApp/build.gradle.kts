@@ -58,6 +58,8 @@ kotlin {
             implementation(libs.syntax.highlights)
             // Toast
             implementation(libs.multiplatform.toast)
+            // TreeView
+            implementation(libs.compose.treeview)
 
         }
         commonTest.dependencies {

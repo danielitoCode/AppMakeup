@@ -4,12 +4,15 @@ import com.elitec.appmakeup.core.v4.contracts.GenerationResult
 import com.elitec.appmakeup.core.v4.pipeline.GeneratedArtifact
 import com.elitec.appmakeup.core.v4.pipeline.WritingOptions
 import com.elitec.appmakeup.core.v5.domain.contracts.GenerationContext
+import com.elitec.appmakeup.logs.Logger
 import java.io.File
 import kotlin.text.get
 
 class FileSystemWritingStage(
     private val options: WritingOptions = WritingOptions()
 ) : WritingStage {
+
+    private val tag = "[FileSystemWritingStage] --->"
 
     override fun write(
         outputPath: String,
@@ -23,7 +26,7 @@ class FileSystemWritingStage(
             val file = File(outputPath, artifact.relativePath)
 
             if (dryRun) {
-                println("[DRY-RUN] Would write: ${file.path}")
+                Logger.success(tag, "[DRY-RUN] Would write: ${file.path}")
                 return@forEach
             }
 

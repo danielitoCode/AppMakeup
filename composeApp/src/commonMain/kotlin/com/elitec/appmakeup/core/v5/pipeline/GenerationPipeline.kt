@@ -41,10 +41,12 @@ class GenerationPipeline(
             artifacts = artifacts,
             context = context
         )
-        if (!writeResult.isSuccess()) return writeResult
+        if (!writeResult.isSuccess()) {
+            return writeResult
+        }
 
         reportingStage.report(artifacts)
 
-        return GenerationResult.Success
+        return writeResult
     }
 }

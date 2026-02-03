@@ -23,7 +23,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +41,8 @@ import appmakeup.composeapp.generated.resources.Res
 import appmakeup.composeapp.generated.resources.sinfotow
 import appmakeup.composeapp.generated.resources.toolicon
 import com.elitec.appmakeup.di.initKoin
+import com.elitec.appmakeup.presentation.TestScreen
+import com.elitec.appmakeup.presentation.WindowSize
 import com.elitec.appmakeup.presentation.navigation.MainNavigationWrapper
 import com.elitec.appmakeup.presentation.theme.AppTheme
 import io.github.vinceglb.filekit.FileKit
@@ -51,6 +57,8 @@ fun main() = application {
         position = WindowPosition(alignment = Alignment.Center),
         placement = WindowPlacement.Floating
     )
+    var windowSizeState by remember { mutableStateOf(WindowSize.Floating) }
+
     // Initialize FileKit
     val appDir = File(System.getProperty("user.home"), ".myapp")
     FileKit.init(
@@ -61,7 +69,6 @@ fun main() = application {
     LaunchedEffect(null) {
         initKoin()
     }
-    val scope = rememberCoroutineScope()
     Window(
         resizable = false,
         undecorated = true,
@@ -133,6 +140,10 @@ fun main() = application {
                     Text(text = isSystemInDarkTheme().toString())
                 },
             ) { innerPaddings ->
+                /*TestScreen(
+                    windowSize = windowState.placement.toWindowSize(),
+                    modifier = Modifier.fillMaxSize().padding(innerPaddings)
+                )*/
                 MainNavigationWrapper(
                     onAppReady = {
                         windowState.placement = WindowPlacement.Maximized
@@ -143,3 +154,10 @@ fun main() = application {
         }
     }
 }
+
+fun WindowPlacement.toWindowSize(): WindowSize =
+    when(this) {
+        WindowPlacement.Floating -> WindowSize.Floating
+        WindowPlacement.Maximized -> WindowSize.Maximized
+        WindowPlacement.Fullscreen -> WindowSize.Expanded
+    }

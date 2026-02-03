@@ -14,7 +14,7 @@ import com.elitec.appmakeup.core.v4.pipeline.DefaultReportingStage
 import com.elitec.appmakeup.core.v5.pipeline.FileSystemWritingStage
 import com.elitec.appmakeup.core.v5.pipeline.GenerationPipeline
 import com.elitec.appmakeup.core.v5.pipeline.GenerationStage
-import com.elitec.appmakeup.core.v5.pipeline.PreviewWritingStage
+import com.elitec.appmakeup.core.v5.preview.PreviewWritingStage
 import com.elitec.appmakeup.core.v4.pipeline.ReportFormat
 import com.elitec.appmakeup.core.v4.pipeline.ReportingStage
 import com.elitec.appmakeup.core.v5.pipeline.ValidationStage

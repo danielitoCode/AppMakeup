@@ -13,85 +13,68 @@ class ProjectExporter(
     private val previewPipeline: GenerationPipeline
 ) {
 
-    private val tag = "ProjectExporter::DESKTOP"
+    private val tag = "[ProjectExporter::DESKTOP] --->"
 
     fun export(
         project: AppMakeupProject,
         dryRun: Boolean
     ): GenerationResult {
 
-        Logger.success(
-            tag,
-            "Init generation code in platform (dryRun=$dryRun)"
-        )
+        Logger.success(tag, "Init generation code in platform (dryRun=$dryRun)")
 
         val packagePath = project.packageName.replace(".", "/")
-        Logger.success(
-            tag,
-            "Generation code package path: $packagePath"
-        )
+        Logger.success(tag, "Generation code package path: $packagePath")
 
-        val outputPath =
-            "${project.path}/export/composeApp/src/androidMain/kotlin/$packagePath"
+        val outputPath = "${project.path}/export/composeApp/src/androidMain/kotlin/$packagePath"
+        Logger.success(tag, "Generation output path: $outputPath")
 
-        Logger.success(
-            tag,
-            "Generation output path: $outputPath"
-        )
-
-        val pipelineToUse =
-            if (dryRun) previewPipeline else pipeline
+        val pipelineToUse = if (dryRun) previewPipeline else pipeline
 
         var lastResult: GenerationResult = GenerationResult.Success
 
+        val previewFiles = emptyList<String>().toMutableList()
+
         project.features.forEach { feature ->
 
-            Logger.warning(
-                tag,
-                "Scanning feature: ${feature.name}"
+            Logger.warning(tag, "Scanning feature: ${feature.name}")
+
+            val coreFeature = ProjectToCoreMapper().mapFeature(feature)
+
+            val context = GenerationContext(
+                architecture = DefaultArchitecture.value,
+                feature = coreFeature,
+                outputPath = outputPath,
+                options = mapOf("dryRun" to dryRun)
             )
 
-            val coreFeature =
-                ProjectToCoreMapper().mapFeature(feature)
-
-            val result = pipelineToUse.run(
-                GenerationContext(
-                    architecture = DefaultArchitecture.value,
-                    feature = coreFeature,
-                    outputPath = outputPath,
-                    options = mapOf("dryRun" to dryRun)
-                )
-            )
+            val result = pipelineToUse.run(context)
 
             when (result) {
                 is GenerationResult.Failure -> {
-                    Logger.error(
-                        tag,
-                        "Generation failed for feature ${feature.name}",
-                        RuntimeException(result.reason)
-                    )
+                    Logger.error(tag, "Generation failed for feature ${feature.name}", RuntimeException(result.reason))
                     return result
                 }
 
                 is GenerationResult.Preview -> {
-                    Logger.success(
-                        tag,
-                        "Preview generated for feature ${feature.name} (${result.files.size} files)"
-                    )
+                    Logger.success(tag, "Preview generated for feature ${feature.name} (${result.files.size} files)")
                     lastResult = result
                 }
 
                 GenerationResult.Success -> {
-                    Logger.success(
-                        tag,
-                        "Generation completed for feature ${feature.name}"
-                    )
+                    Logger.success(tag, "Generation completed for feature ${feature.name}")
                     lastResult = result
                 }
             }
+
+            if (result is GenerationResult.Preview) {
+                previewFiles += result.files
+            }
         }
 
-        return lastResult
+        return if (dryRun)
+            GenerationResult.Preview(previewFiles)
+        else
+            GenerationResult.Success
     }
 
     fun preview(project: AppMakeupProject): List<String> {

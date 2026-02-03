@@ -25,6 +25,8 @@ sequence = "2.0.0-kotlin2.1"
 highlights = "1.1.0"
 # Toast
 sonner = "0.3.9"
+# TreeView
+treeView = "0.4.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -63,6 +65,7 @@ animation-sequence = { module = "io.github.pauloaapereira:animatedsequence", ver
 syntax-highlights = { module = "dev.snipme:highlights", version.ref = "highlights" }
 # Toast
 multiplatform-toast = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
+compose-treeview = { module = "io.github.vooft:compose-treeview-core", version.ref = "treeView" }
 
 [plugins]
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
