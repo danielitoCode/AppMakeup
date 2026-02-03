@@ -20,21 +20,15 @@ class DefaultPlanningStage(
         val feature = context.feature
         val layers = feature.layers
 
-        val generateDomain =
-            layers.contains(CoreLayer.DOMAIN)
+        val generateDomain = CoreLayer.DOMAIN in layers
+        val generateData = CoreLayer.DATA in layers
+        val generatePresentation = CoreLayer.PRESENTATION in layers
 
-        val generateData =
-            layers.contains(CoreLayer.DATA)
+        // ✅ Core V5: si hay entidades, hay repos + mappers
+        val hasEntities = feature.entities.isNotEmpty()
 
-        val generatePresentation =
-            layers.contains(CoreLayer.PRESENTATION)
-
-        // 🔑 Core V5: basta con que existan contracts
-        val generateRepositories =
-            generateData && feature.repositoryContracts.isNotEmpty()
-
-        val generateMappers =
-            generateData && feature.repositoryContracts.isNotEmpty()
+        val generateRepositories = generateData && hasEntities
+        val generateMappers = generateData && hasEntities
 
         Logger.success(
             tag,
