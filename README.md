@@ -1,28 +1,27 @@
 # AppMakeup — Core V4 (Closed)
 
-## 🚀 What is AppMakeup?
+**AppMakeup** is a Kotlin Multiplatform desktop application that lets teams **model architecture visually** and **generate deterministic project structures and code** aligned with Clean Architecture.
 
-**AppMakeup** is a desktop application built with **Kotlin Multiplatform** and **Compose Desktop** that allows you to **model application architecture visually** and **generate deterministic project structures and code** following Clean Architecture principles.
-
-AppMakeup is **not an AI tool**.
-
-It does **not**:
-- infer business logic
-- guess architecture decisions
-- generate behavior automatically
-
-Instead, AppMakeup is a **deterministic architecture compiler**.
-
-> You declare architecture. AppMakeup materializes it safely.
+> **Not an AI tool.** AppMakeup does not infer business logic or make architectural decisions.  
+> It is a **deterministic architecture compiler**: you declare the architecture, AppMakeup materializes it safely.
 
 ---
 
-## 🧠 Core Philosophy (Unchanged)
+## ✨ Highlights
+
+- Architecture-first workflow
+- Deterministic generation (no magic)
+- Strict validation before export
+- Dry-run previews of the generation plan and files
+- Clean Architecture separation (Domain / Application / Infrastructure / Presentation)
+
+---
+
+## 🧠 Core Philosophy
 
 - Architecture first, code second
 - Structure before implementation
 - Predictability over magic
-- Deterministic generation
 - Explicit contracts and layers
 - No filesystem access from UI
 - No domain logic in presentation
@@ -30,110 +29,72 @@ Instead, AppMakeup is a **deterministic architecture compiler**.
 
 ---
 
-## ✅ Current State — **Core V4 (Closed & Stable)**
+## ✅ Current State — Core V4 (Closed & Stable)
 
-Core V4 is now **feature-complete and closed**.
+Core V4 is **feature-complete and closed**.  
+It delivers the **first full generation-capable core**, with:
 
-It represents the **first full generation-capable core**, where AppMakeup moves from *structure modeling* to **real, validated code generation** while preserving strict architectural guarantees.
-
-Core V4 builds on Core V2 and Core V3 concepts but introduces a **generation pipeline**, **planning stage**, and **dry-run previews**.
+- A deterministic pipeline
+- A planning stage
+- True dry-run previews
 
 ---
 
-## ✨ What Core V4 Includes
+## 🧭 What Core V4 Includes
 
-### 🧭 Project Lifecycle
-
+### Project Lifecycle
 - Create new projects
 - Open existing projects
 - Persist and validate projects on disk
 - Versioned project format
 - Recent projects registry
 
----
-
-### 🧩 Architecture Modeling
-
-- Features
-- Domain entities
-- Entity properties
+### Architecture Modeling
+- Features and layers
+- Domain entities and properties
 - Identifier enforcement
-- Layer selection per feature
-- Validation before generation
-
-Invalid states are **prevented at editor level**.
+- Validation before generation  
+  *Invalid states are prevented at the editor level.*
 
 ---
 
-### 🧪 Generation Pipeline (Core V4)
+## 🧪 Generation Pipeline (5 Stages)
 
-Core V4 introduces a **5-stage deterministic pipeline**:
-
-1. **ValidationStage**
-   - Entity rules
-   - Feature rules
-   - Architecture constraints
-
-2. **PlanningStage**
-   - Decides what layers will be generated
-   - Domain / Data / Repositories / Mappers
-   - Fully testable and previewable
-
-3. **GenerationStage**
-   - Layer generators
-   - Templates
-   - No filesystem access
-
-4. **WritingStage**
-   - Real filesystem writer
-   - Dry-run writer (preview mode)
-
-5. **ReportingStage**
-   - CLI / Table / JSON output
+1. **ValidationStage**  
+   Entity rules · Feature rules · Architecture constraints
+2. **PlanningStage**  
+   Determines which layers apply (Domain / Data / Repos / Mappers)
+3. **GenerationStage**  
+   Layer generators + templates (no filesystem access)
+4. **WritingStage**  
+   Real writer + dry-run writer
+5. **ReportingStage**  
+   CLI / Table / JSON output
 
 ---
 
-### 🧪 Dry-Run Mode
+## 🔎 Preview & Dry-Run
 
-Core V4 supports **true dry-run execution**:
-
-- No files are written
-- Generated artifacts are collected
-- Output paths are simulated
+### Dry-Run Mode
+- No files written
+- Artifacts collected in memory
+- Output paths simulated
 - Safe to run repeatedly
 
-Used for:
-- UI preview
-- Tests
-- Validation before export
-
----
-
-### 🧩 Generation Plan Preview (UI)
-
-Before exporting, users can see:
-
+### Generation Plan Preview (UI)
 - Which layers will be generated
 - Whether repositories/mappers apply
 - Why a layer is skipped
-- Validation errors per feature
+- Per-feature validation errors
 
-This makes generation **explainable**, not magical.
-
----
-
-### 🧾 Files Preview (Dry-Run Visual)
-
-The UI shows:
+### Files Preview
 - Exact files that would be generated
 - Relative paths
 - Per-feature grouping
 
-Nothing is written unless explicitly exported.
-
 ---
 
-### 🏗️ Internal Architecture (Clean Architecture)
+## 🏗️ Internal Architecture (Clean Architecture)
 
 **Domain**
 - Core models
@@ -148,7 +109,7 @@ Nothing is written unless explicitly exported.
 **Infrastructure**
 - Filesystem
 - Exporters
-- Pipelines wiring (Koin)
+- Pipeline wiring (Koin)
 
 **Presentation**
 - Compose Desktop UI
@@ -160,7 +121,6 @@ Nothing is written unless explicitly exported.
 ## 🧪 Testing & Quality
 
 Core V4 is heavily tested:
-
 - Pipeline unit tests
 - Dry-run generation tests
 - Failure-path tests
@@ -170,27 +130,21 @@ Generation is **100% testable without filesystem**.
 
 ---
 
-## 🚫 What Core V4 Does NOT Do
+## 🚫 Out of Scope (by design)
 
-By design, Core V4 does **not**:
-
-- generate UI screens
-- generate ViewModels
-- guess repository contracts
-- auto-migrate projects
-- act as an IDE
-- include undo/redo (yet)
+Core V4 does **not**:
+- Generate UI screens or ViewModels
+- Guess repository contracts
+- Auto-migrate projects
+- Act as an IDE
+- Include undo/redo (yet)
 
 ---
 
-## 🔮 What Comes Next — **Core V5 (Planned)**
-
-Core V5 will focus on **advanced modeling and extensibility**:
-
-### Planned features
+## 🔮 What’s Next — Core V5 (Planned)
 
 - RepositoryContract editor (visual CRUD modeling)
-- Explicit Mapper contracts
+- Explicit mapper contracts
 - Multi-platform generators (Android / KMP / Backend)
 - Plugin system
 - Template customization
@@ -198,11 +152,11 @@ Core V5 will focus on **advanced modeling and extensibility**:
 - Project migrations
 - Export profiles
 
-Core V5 will **not break Core V4 projects**.
+> Core V5 will **not break Core V4 projects**.
 
 ---
 
-## 🖥️ Running the project
+## 🖥️ Running the Project
 
 ### Desktop (JVM)
 
@@ -215,7 +169,6 @@ Core V5 will **not break Core V4 projects**.
 ## 🤝 Final Notes
 
 Core V4 marks a **major milestone**:
-
 - Architecture is explicit
 - Generation is deterministic
 - Previews are safe
