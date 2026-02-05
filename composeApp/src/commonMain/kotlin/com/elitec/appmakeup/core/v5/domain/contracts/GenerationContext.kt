@@ -7,5 +7,6 @@ data class GenerationContext(
     val architecture: CoreArchitecture,
     val feature: CoreFeature,
     val outputPath: String,
+    val basePackage: String,
     val options: Map<String, Any> = emptyMap()
 )

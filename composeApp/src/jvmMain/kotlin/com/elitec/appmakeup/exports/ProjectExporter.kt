@@ -44,7 +44,8 @@ class ProjectExporter(
                 architecture = DefaultArchitecture.value,
                 feature = coreFeature,
                 outputPath = outputPath,
-                options = mapOf("dryRun" to dryRun)
+                options = mapOf("dryRun" to dryRun),
+                basePackage = project.packageName
             )
 
             val result = pipelineToUse.run(context)
@@ -92,7 +93,8 @@ class ProjectExporter(
                     architecture = DefaultArchitecture.value,
                     feature = coreFeature,
                     outputPath = outputPath,
-                    options = mapOf("dryRun" to true)
+                    options = mapOf("dryRun" to true),
+                    basePackage = project.packageName
                 )
             )
 

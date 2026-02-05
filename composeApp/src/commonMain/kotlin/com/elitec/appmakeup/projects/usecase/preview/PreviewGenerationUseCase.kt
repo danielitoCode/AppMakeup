@@ -23,7 +23,8 @@ class PreviewGenerationUseCase(
                 architecture = DefaultArchitecture.value,
                 feature = coreFeature,
                 outputPath = "PREVIEW",
-                options = mapOf("dryRun" to true)
+                options = mapOf("dryRun" to true),
+                basePackage = project.packageName
             )
 
             results += previewPipeline.run(context)
