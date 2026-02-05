@@ -13,6 +13,9 @@ import com.elitec.appmakeup.core.v4.pipeline.WritingOptions
 import com.elitec.appmakeup.core.v5.validation.ArchitectureValidator
 import com.elitec.appmakeup.core.v5.validation.DefaultValidationStage
 import com.elitec.appmakeup.core.v4.validation.FeatureValidator
+import com.elitec.appmakeup.core.v5.definitions.CoreFeature
+import com.elitec.appmakeup.core.v5.domain.contracts.GenerationContext
+import com.elitec.appmakeup.core.v5.pipeline.DefaultPlanningStage
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertTrue
